@@ -4,6 +4,7 @@ import { Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import LandingPage from "@/components/landing/LandingPage";
 import Studio from "@/components/studio/Studio";
+import UpdatePanel from "@/components/update/UpdatePanel";
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -21,5 +22,10 @@ export default function Home() {
     );
   }
 
-  return user ? <Studio /> : <LandingPage />;
+  return (
+    <>
+      {user ? <Studio /> : <LandingPage />}
+      <UpdatePanel />
+    </>
+  );
 }
