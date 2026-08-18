@@ -12,6 +12,7 @@ const TR_ITEMS = [
   "💬 **Sohbet geçmişi** eklendi",
   "🔐 **Sohbet geçmişi şifreleme** eklendi — hesabınız çalınsa bile sohbet geçmişiniz, belirlediğiniz **4 haneli şifre** ile korunur",
   "🛠️ Proje geçmiş hatası düzeltildi",
+  "🐛 Geçmişe kaydetme bugu düzeltildi",
 ];
 
 const EN_ITEMS = [
@@ -21,6 +22,7 @@ const EN_ITEMS = [
   "💬 **Chat history** added",
   "🔐 **Chat history encryption** added — even if your account is compromised, your chats stay protected with your **4-digit PIN**",
   "🛠️ Project history error fixed",
+  "🐛 Chat history saving bug fixed",
 ];
 
 function renderBold(text: string) {

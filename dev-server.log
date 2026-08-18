@@ -5,13 +5,10 @@
 ▲ Next.js 16.3.1 (Turbopack)
 - Local:         http://localhost:3000
 - Network:       http://192.168.56.1:3000
-✓ Ready in 1106ms
+✓ Ready in 1492ms
 ⚠ Warning: Next.js ignored package-lock.json in C:\Users\Asus because it is outside the current Git repository (C:\Users\Asus\zelixvary).
  To use this directory, set `turbopack.root` in your Next.js config.
 
-✓ Running next.config.ts took 46ms
+✓ Running next.config.ts took 69ms
 
- GET / 200 in 351ms (next.js: 141ms, application-code: 210ms)
- GET / 200 in 16ms (next.js: 7ms, application-code: 9ms)
- GET / 200 in 46ms (next.js: 5ms, application-code: 41ms)
- POST /api/ai/chat 200 in 37.5s (next.js: 77ms, application-code: 37.4s)
+ GET / 200 in 802ms (next.js: 295ms, application-code: 507ms)

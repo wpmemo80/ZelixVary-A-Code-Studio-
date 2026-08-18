@@ -201,9 +201,11 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
   function handleNewChat() {
     if (isBusy) return;
     idRef.current = 1;
-    setActiveChatId(null);
+    // Yeni sohbet taze bir Firestore kimliği alır; ilk mesajla otomatik kaydedilir.
+    setActiveChatId(uid ? `${chatDocId(uid, projectId)}_${Date.now()}` : null);
     activeEncryptedRef.current = false;
     activePinRef.current = null;
+    chatNameRef.current = null;
     setMessages([]);
   }
 
@@ -289,7 +291,9 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
   }
 
   async function handleSaveChat() {
-    if (!uid || !activeChatId || savingChat) return;
+    if (!uid || savingChat) return;
+    // Kayıt sırasında kimlik yoksa (örn. yeni sohbet) anında taze bir kimlik üret.
+    const chatId = activeChatId ?? `${chatDocId(uid, projectId)}_${Date.now()}`;
     if (saveLock === "locked") {
       if (!isValidPin(savePin) || savePin !== savePinConfirm) {
         showSaveMsg("error", "Şifre 4 haneli rakam olmalı ve iki alan da aynı olmalı.");
@@ -307,10 +311,11 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
           ...(provider ? { provider } : {}),
         };
       });
-      await saveChatHistory(uid, activeChatId, slim, {
+      await saveChatHistory(uid, chatId, slim, {
         name,
         pin: saveLock === "locked" ? savePin : null,
       });
+      setActiveChatId(chatId);
       chatNameRef.current = name;
       activePinRef.current = saveLock === "locked" ? savePin : null;
       setSaveOpen(false);
