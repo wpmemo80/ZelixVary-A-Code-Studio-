@@ -1,0 +1,235 @@
+
+> zelixvary@0.1.0 dev
+> next dev
+
+▲ Next.js 16.3.1 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.56.1:3000
+✓ Ready in 1363ms
+⚠ Warning: Next.js ignored package-lock.json in C:\Users\Asus because it would include your home directory (C:\Users\Asus).
+ To use this directory, set `turbopack.root` in your Next.js config.
+
+✓ Running next.config.ts took 47ms
+
+ GET / 200 in 634ms (next.js: 254ms, application-code: 379ms)
+ GET / 200 in 100ms (next.js: 25ms, application-code: 75ms)
+ POST /api/ai/chat 403 in 535ms (next.js: 138ms, application-code: 397ms)
+ GET / 200 in 67ms (next.js: 8ms, application-code: 59ms)
+ POST /api/ai/chat 403 in 312ms (next.js: 5ms, application-code: 307ms)
+ POST /api/ai/chat 200 in 8.1s (next.js: 4ms, application-code: 8.1s)
+ POST /api/ai/chat 403 in 369ms (next.js: 4ms, application-code: 365ms)
+ POST /api/ai/chat 200 in 11.3s (next.js: 4ms, application-code: 11.3s)
+ POST /api/ai/chat 200 in 9.3s (next.js: 5ms, application-code: 9.3s)
+[browser] Error thrown in read: 
+    at readWriteHelper (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94132)
+    at Object.read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94746)
+    at Object.read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:219167)
+    at doReadv (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:366393)
+    at _fd_read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:367670)
+    at callPyObjectKwargs (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:62076)
+    at Proxy.callKwargs (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:79103)
+    at Object.runPython (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:104744)
+    at runCode (components/preview/PythonRunner.tsx:134:10)
+    at PythonRunner.useEffect.t (components/preview/PythonRunner.tsx:111:7)
+  132 |     const t0 = performance.now();
+  133 |     try {
+> 134 |       py.runPython(trimmed);
+      |          ^
+  135 |     } catch (err) {
+  136 |       pushInfo(`Hata (${(performance.now() - t0).toFixed(0)} ms):`);
+  137 |       pushInfo(String(err)); (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94132)
+[browser] TypeError: Illegal invocation
+    at LegacyReader._getInput (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:97233)
+    at LegacyReader.read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:97809)
+    at <unknown> (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94764)
+    at handleEAGAIN (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:93894)
+    at readWriteHelper (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94010)
+    at Object.read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94746)
+    at Object.read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:219167)
+    at doReadv (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:366393)
+    at _fd_read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:367670)
+    at callPyObjectKwargs (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:62076)
+    at Proxy.callKwargs (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:79103)
+    at Object.runPython (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:104744)
+    at runCode (components/preview/PythonRunner.tsx:134:10)
+    at PythonRunner.useEffect.t (components/preview/PythonRunner.tsx:111:7)
+  132 |     const t0 = performance.now();
+  133 |     try {
+> 134 |       py.runPython(trimmed);
+      |          ^
+  135 |     } catch (err) {
+  136 |       pushInfo(`Hata (${(performance.now() - t0).toFixed(0)} ms):`);
+  137 |       pushInfo(String(err)); (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94171)
+ GET /monaco-editor/min-maps/vs/loader.js.map 404 in 271ms (next.js: 111ms, application-code: 161ms)
+[browser] Error thrown in read: 
+    at readWriteHelper (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94132)
+    at Object.read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94746)
+    at Object.read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:219167)
+    at doReadv (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:366393)
+    at _fd_read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:367670)
+    at callPyObjectKwargs (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:62076)
+    at Proxy.callKwargs (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:79103)
+    at Object.runPython (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:104744)
+    at runCode (components/preview/PythonRunner.tsx:134:10)
+  132 |     const t0 = performance.now();
+  133 |     try {
+> 134 |       py.runPython(trimmed);
+      |          ^
+  135 |     } catch (err) {
+  136 |       pushInfo(`Hata (${(performance.now() - t0).toFixed(0)} ms):`);
+  137 |       pushInfo(String(err)); (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94132)
+[browser] TypeError: Illegal invocation
+    at LegacyReader._getInput (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:97233)
+    at LegacyReader.read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:97809)
+    at <unknown> (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94764)
+    at handleEAGAIN (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:93894)
+    at readWriteHelper (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94010)
+    at Object.read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94746)
+    at Object.read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:219167)
+    at doReadv (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:366393)
+    at _fd_read (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:367670)
+    at callPyObjectKwargs (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:62076)
+    at Proxy.callKwargs (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:79103)
+    at Object.runPython (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:104744)
+    at runCode (components/preview/PythonRunner.tsx:134:10)
+    at button (<anonymous>)
+    at PythonRunner (components/preview/PythonRunner.tsx:166:11)
+    at PreviewPanel (components/preview/PreviewPanel.tsx:51:12)
+    at Studio (components/studio/Studio.tsx:508:15)
+    at Home (app/page.tsx:24:17)
+  132 |     const t0 = performance.now();
+  133 |     try {
+> 134 |       py.runPython(trimmed);
+      |          ^
+  135 |     } catch (err) {
+  136 |       pushInfo(`Hata (${(performance.now() - t0).toFixed(0)} ms):`);
+  137 |       pushInfo(String(err)); (https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.asm.js:10:94171)
+✓ Compiled in 276ms
+ GET / 200 in 87ms (next.js: 34ms, application-code: 54ms)
+✓ Compiled in 182ms
+ GET / 200 in 55ms (next.js: 18ms, application-code: 37ms)
+✓ Compiled in 172ms
+ GET / 200 in 41ms (next.js: 13ms, application-code: 28ms)
+ GET /monaco-editor/min-maps/vs/loader.js.map 404 in 67ms (next.js: 9ms, application-code: 57ms)
+ GET / 200 in 69ms (next.js: 7ms, application-code: 62ms)
+ GET / 200 in 67ms (next.js: 8ms, application-code: 59ms)
+✓ Compiled in 155ms
+ GET / 200 in 45ms (next.js: 15ms, application-code: 30ms)
+✓ Compiled in 118ms
+✓ Compiled in 83ms
+ GET / 200 in 41ms (next.js: 12ms, application-code: 28ms)
+ GET / 200 in 32ms (next.js: 5ms, application-code: 27ms)
+ GET / 200 in 43ms (next.js: 5ms, application-code: 38ms)
+ POST /api/ai/chat 200 in 57s (next.js: 5ms, application-code: 57s)
+ POST /api/ai/chat 200 in 20.5s (next.js: 5ms, application-code: 20.5s)
+ GET / 200 in 22ms (next.js: 8ms, application-code: 14ms)
+✓ Compiled in 180ms
+✓ Compiled in 133ms
+ GET / 200 in 38ms (next.js: 16ms, application-code: 22ms)
+ GET / 200 in 23ms (next.js: 7ms, application-code: 15ms)
+✓ Compiled in 90ms
+ GET / 200 in 26ms (next.js: 10ms, application-code: 16ms)
+✓ Compiled in 91ms
+ GET / 200 in 28ms (next.js: 13ms, application-code: 14ms)
+✓ Compiled in 117ms
+ GET / 200 in 28ms (next.js: 10ms, application-code: 18ms)
+✓ Compiled in 141ms
+ GET / 200 in 28ms (next.js: 10ms, application-code: 19ms)
+✓ Compiled in 224ms
+ GET / 200 in 33ms (next.js: 13ms, application-code: 20ms)
+✓ Compiled in 180ms
+ GET / 200 in 27ms (next.js: 10ms, application-code: 17ms)
+✓ Compiled in 88ms
+ GET / 200 in 68ms (next.js: 3ms, application-code: 65ms)
+ GET / 200 in 52ms (next.js: 5ms, application-code: 48ms)
+ GET /monaco-editor/min-maps/vs/loader.js.map 404 in 84ms (next.js: 13ms, application-code: 71ms)
+ POST /api/ai/chat 200 in 6.2s (next.js: 3ms, application-code: 6.2s)
+ POST /api/ai/chat 200 in 2.9s (next.js: 3ms, application-code: 2.9s)
+ GET /monaco-editor/min-maps/vs/loader.js.map 404 in 57ms (next.js: 7ms, application-code: 50ms)
+ GET / 200 in 24ms (next.js: 8ms, application-code: 16ms)
+✓ Compiled in 113ms
+ GET / 200 in 31ms (next.js: 15ms, application-code: 16ms)
+✓ Compiled in 109ms
+✓ Compiled in 127ms
+ GET / 200 in 47ms (next.js: 18ms, application-code: 29ms)
+ GET / 200 in 25ms (next.js: 8ms, application-code: 16ms)
+✓ Compiled in 138ms
+ GET / 200 in 25ms (next.js: 9ms, application-code: 15ms)
+✓ Compiled in 104ms
+ GET / 200 in 38ms (next.js: 15ms, application-code: 23ms)
+✓ Compiled in 147ms
+ GET / 200 in 25ms (next.js: 9ms, application-code: 15ms)
+✓ Compiled in 110ms
+ GET / 200 in 26ms (next.js: 11ms, application-code: 15ms)
+✓ Compiled in 175ms
+ GET / 200 in 39ms (next.js: 9ms, application-code: 29ms)
+ GET / 200 in 34ms (next.js: 19ms, application-code: 15ms)
+✓ Compiled in 169ms
+ GET / 200 in 24ms (next.js: 9ms, application-code: 15ms)
+✓ Compiled in 120ms
+ GET / 200 in 23ms (next.js: 8ms, application-code: 15ms)
+✓ Compiled in 122ms
+ GET / 200 in 23ms (next.js: 7ms, application-code: 16ms)
+✓ Compiled in 142ms
+ GET / 200 in 29ms (next.js: 9ms, application-code: 19ms)
+✓ Compiled in 129ms
+ GET / 200 in 92ms (next.js: 6ms, application-code: 86ms)
+ POST /api/ai/chat 200 in 4.9s (next.js: 3ms, application-code: 4.9s)
+ POST /api/ai/chat 503 in 3.3s (next.js: 2ms, application-code: 3.3s)
+ POST /api/ai/chat 200 in 7.3s (next.js: 3ms, application-code: 7.3s)
+ GET / 200 in 77ms (next.js: 8ms, application-code: 70ms)
+ POST /api/ai/chat 503 in 27.7s (next.js: 4ms, application-code: 27.7s)
+ POST /api/ai/chat 200 in 34.5s (next.js: 4ms, application-code: 34.5s)
+ POST /api/ai/chat 503 in 5.2s (next.js: 7ms, application-code: 5.2s)
+ POST /api/ai/chat 200 in 51s (next.js: 3ms, application-code: 51s)
+ POST /api/ai/chat 200 in 5.6s (next.js: 3ms, application-code: 5.6s)
+ GET /monaco-editor/min-maps/vs/loader.js.map 404 in 80ms (next.js: 18ms, application-code: 62ms)
+ POST /api/ai/chat 200 in 22.6s (next.js: 1.8ms, application-code: 22.6s)
+ POST /api/ai/chat 200 in 34.4s (next.js: 3ms, application-code: 34.4s)
+ GET / 200 in 29ms (next.js: 12ms, application-code: 16ms)
+✓ Compiled in 65ms
+ GET / 200 in 21ms (next.js: 6ms, application-code: 15ms)
+✓ Compiled in 76ms
+ GET / 200 in 22ms (next.js: 7ms, application-code: 15ms)
+✓ Compiled in 63ms
+ GET / 200 in 21ms (next.js: 7ms, application-code: 14ms)
+✓ Compiled in 67ms
+ GET / 200 in 19ms (next.js: 7ms, application-code: 12ms)
+✓ Compiled in 65ms
+ GET / 200 in 21ms (next.js: 7ms, application-code: 15ms)
+✓ Compiled in 72ms
+ GET / 200 in 31ms (next.js: 8ms, application-code: 23ms)
+✓ Compiled in 71ms
+ GET / 200 in 19ms (next.js: 6ms, application-code: 14ms)
+✓ Compiled in 62ms
+ GET / 200 in 16ms (next.js: 5ms, application-code: 11ms)
+✓ Compiled in 86ms
+ GET / 200 in 21ms (next.js: 7ms, application-code: 14ms)
+✓ Compiled in 65ms
+ GET / 200 in 18ms (next.js: 7ms, application-code: 11ms)
+✓ Compiled in 69ms
+ GET / 200 in 21ms (next.js: 7ms, application-code: 14ms)
+✓ Compiled in 64ms
+ GET / 200 in 29ms (next.js: 8ms, application-code: 21ms)
+✓ Compiled in 56ms
+ GET / 200 in 24ms (next.js: 8ms, application-code: 16ms)
+✓ Compiled in 90ms
+ GET / 200 in 24ms (next.js: 8ms, application-code: 17ms)
+✓ Compiled in 76ms
+ GET / 200 in 22ms (next.js: 6ms, application-code: 16ms)
+✓ Compiled in 70ms
+ GET / 200 in 20ms (next.js: 6ms, application-code: 14ms)
+✓ Compiled in 55ms
+ GET / 200 in 40ms (next.js: 3ms, application-code: 37ms)
+ GET / 200 in 48ms (next.js: 3ms, application-code: 45ms)
+ POST /api/ai/chat 200 in 3.5s (next.js: 4ms, application-code: 3.5s)
+ GET /monaco-editor/min-maps/vs/loader.js.map 404 in 94ms (next.js: 14ms, application-code: 80ms)
+[browser] [2026-08-17T19:59:19.601Z]  @firebase/firestore: Firestore (12.17.0): BloomFilter error:  {"name":"BloomFilterError"}
+ POST /api/ai/chat 200 in 43s (next.js: 3ms, application-code: 43s)
+ POST /api/ai/chat 200 in 45s (next.js: 1.6ms, application-code: 45s)
+ POST /api/ai/chat 200 in 3.6s (next.js: 2.0ms, application-code: 3.6s)
+[browser] [2026-08-17T20:10:16.678Z]  @firebase/firestore: Firestore (12.17.0): BloomFilter error:  {"name":"BloomFilterError"}
+ POST /api/ai/chat 429 in 256ms (next.js: 2ms, application-code: 254ms)
+ POST /api/ai/chat 429 in 251ms (next.js: 1.8ms, application-code: 249ms)
+ POST /api/ai/chat 429 in 386ms (next.js: 1.8ms, application-code: 385ms)
+ POST /api/ai/chat 200 in 3.8s (next.js: 1.6ms, application-code: 3.8s)
