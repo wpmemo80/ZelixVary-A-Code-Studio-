@@ -37,6 +37,8 @@ import PreviewPanel from "@/components/preview/PreviewPanel";
 import AIChat, { type AIChatHandle } from "@/components/chat/AIChat";
 import SettingsModal from "@/components/settings/SettingsModal";
 import ProjectsPanel from "@/components/projects/ProjectsPanel";
+import LanguageSwitcher from "@/components/settings/LanguageSwitcher";
+import { useLang } from "@/lib/language-context";
 
 function useDebounced<T>(value: T, delay: number): T {
   const [debounced, setDebounced] = useState(value);
@@ -56,6 +58,7 @@ interface StudioProps {
 
 export default function Studio({ mode, onBackToSelection }: StudioProps) {
   const { user } = useAuth();
+  const { t } = useLang();
   const [code, setCode] = useLocalStorageValue<string>("zelixvary:code", DEFAULT_TEMPLATE);
   const [apiKeys, setApiKeys] = useLocalStorageValue<ApiKeys>("zelixvary:api-keys", {});
 
@@ -189,9 +192,9 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
         setProject({ ...project, id: created.id });
       }
       savedSignatureRef.current = JSON.stringify(project.files);
-      showNotice("ok", "Proje kaydedildi ✅ Geçmiş Projeler'de görünür.");
+      showNotice("ok", t("studio.savedOk"));
     } catch (err) {
-      showNotice("error", `Kayıt başarısız: ${describeFirestoreError(err)}`);
+      showNotice("error", `${t("studio.saveFail")} ${describeFirestoreError(err)}`);
     } finally {
       setSaving(false);
     }
@@ -210,7 +213,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
     try {
       const loaded = await loadProject(id);
       if (!loaded) {
-        showNotice("error", "Proje bulunamadı — kayıt silinmiş olabilir.");
+        showNotice("error", t("studio.projectNotFound"));
         return;
       }
       setProject(loaded);
@@ -220,7 +223,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
       setTab("preview");
       setRefreshKey((k) => k + 1);
     } catch (err) {
-      showNotice("error", `Proje açılamadı: ${describeFirestoreError(err)}`);
+      showNotice("error", `${t("studio.projectOpenError")} ${describeFirestoreError(err)}`);
     }
   }
 
@@ -250,13 +253,13 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
         await saveProject(project, user?.uid ?? "");
         savedSignatureRef.current = JSON.stringify(project.files);
       } catch (err) {
-        showNotice("error", `Kayıt başarısız, indirme yine de yapıldı: ${describeFirestoreError(err)}`);
+        showNotice("error", `${t("studio.saveFail")} ${describeFirestoreError(err)}`);
       } finally {
         setSaving(false);
       }
     }
     await downloadProjectZip(project.name, project.files);
-    showNotice("ok", "Proje zip olarak indirildi (zelixcode).");
+    showNotice("ok", t("studio.zipDownloaded"));
   }
 
   async function handleDiscardProceed() {
@@ -325,7 +328,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
           title="Mod seçimine dön"
         >
           <ArrowLeft size={12} />
-          Geri
+          {t("studio.back")}
         </button>
 
         <div className="flex items-center gap-2">
@@ -345,7 +348,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
               : "border border-emerald-500/50 bg-emerald-500/15 text-emerald-300"
           }`}
         >
-          {isLocalMode ? "☁️ LOCAL" : "📁 DOSYA"}
+          {isLocalMode ? `☁️ ${t("studio.local")}` : `📁 ${t("studio.fileMode")}`}
         </span>
 
         {isProjectMode && (
@@ -356,7 +359,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
               title="Projelerim: yeni proje, içe aktar, geçmiş"
             >
               <FolderOpen size={12} className="text-violet-400" />
-              Proje
+              {t("studio.project")}
             </button>
 
             <div className="ml-1 flex min-w-0 items-center gap-2">
@@ -380,7 +383,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
         {isLocalMode && (
           <span className="flex items-center gap-1.5 rounded-md border border-zinc-800 bg-[#232328] px-2.5 py-1 text-[11.5px] text-zinc-300">
             <FileCode2 size={12} className="text-sky-400" />
-            index.html (tek dosya)
+            {t("studio.singleFile")}
           </span>
         )}
 
@@ -394,10 +397,10 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
                   ? "bg-amber-500/90 text-black hover:bg-amber-400"
                   : "border border-zinc-700 text-zinc-400 hover:text-zinc-200"
               }`}
-              title={dirty ? "Kaydedilmemiş değişiklikler var" : "Kaydedildi"}
+              title={dirty ? t("studio.save") : t("studio.saved")}
             >
               {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
-              {dirty ? "Kaydet" : "Kaydedildi"}
+              {dirty ? t("studio.save") : t("studio.saved")}
             </button>
           )}
           <button
@@ -406,7 +409,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
             title="Önizlemeyi yenile (F5)"
           >
             <Play size={12} />
-            Çalıştır
+            {t("studio.run")}
           </button>
         </div>
 
@@ -418,7 +421,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
             title="Kodu analiz et & hata bul"
           >
             <Bug size={12} />
-            Analiz Et
+            {t("studio.analyze")}
           </button>
           <button
             onClick={() => runAction("refactor")}
@@ -427,7 +430,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
             title="Kodu yeniden yaz (refactor)"
           >
             <Wand2 size={12} />
-            Refactor
+            {t("studio.refactor")}
           </button>
           {isProjectMode && (
             <button
@@ -436,7 +439,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
               title="Projeyi zip olarak indir (zelixcode)"
             >
               <Download size={12} />
-              Çıkar
+              {t("studio.export")}
             </button>
           )}
           <button
@@ -449,8 +452,9 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
             title="API anahtarlarını yönet"
           >
             <Settings size={12} />
-            {hasAnyKey ? "Ayarlar" : "API Anahtarı"}
+            {hasAnyKey ? t("studio.settings") : t("studio.apiKey")}
           </button>
+          <LanguageSwitcher />
           <div className="flex items-center gap-1.5 border-l border-zinc-800 pl-2">
             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-violet-600/30 text-[11px] font-bold text-violet-300">
               {displayName.charAt(0).toUpperCase()}
@@ -461,7 +465,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
             <button
               onClick={handleLogout}
               className="flex h-6 w-6 items-center justify-center rounded text-zinc-500 transition hover:bg-zinc-800 hover:text-red-400"
-              title="Çıkış yap"
+              title={t("studio.logout")}
             >
               <LogOut size={13} />
             </button>
@@ -527,7 +531,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
                 {isProjectMode ? (currentFile ?? "dosya seç") : "HTML / CSS / JS — Monaco"}
               </span>
               <span className="ml-auto flex items-center gap-1 text-[11px] text-zinc-500">
-                <Eye size={11} /> {activeCode.length} karakter
+                <Eye size={11} /> {activeCode.length} {t("studio.chars")}
               </span>
             </div>
             <div className="h-[calc(100%-32px)]">
@@ -536,17 +540,20 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
                   <div className="text-center">
                     <FileCode2 size={40} className="mx-auto mb-3 text-zinc-700" />
                     <p className="text-[14px] font-medium text-zinc-500">
-                      Sol taraftan bir dosya seç veya yeni dosya oluştur
+                      {t("studio.fileModeEmpty")}
                     </p>
                     <p className="mt-1 text-[12px] text-zinc-600">
-                      Dosya modu — değişiklikler kalıcı olarak kaydedilir
+                      {t("studio.fileModeHint")}
                     </p>
                   </div>
                 </div>
               ) : isProjectMode && !currentFile ? (
                 <div className="flex h-full items-center justify-center">
                   <p className="text-[13px] text-zinc-600">
-                    Soldan bir dosya seç veya <button className="text-violet-400 hover:underline" onClick={() => setProjectsOpen(true)}>yeni dosya oluştur</button>
+                    {t("studio.selectOrCreate")}{" "}
+                    <button className="text-violet-400 hover:underline" onClick={() => setProjectsOpen(true)}>
+                      {t("files.createBtn")}
+                    </button>
                   </p>
                 </div>
               ) : (
@@ -577,7 +584,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
               }`}
             >
               <Eye size={13} className={tab === "preview" ? "text-sky-400" : ""} />
-              Canlı Önizleme
+              {t("studio.preview")}
             </button>
             <button
               onClick={() => setTab("ai")}
@@ -649,23 +656,22 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
       {pendingDiscard && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
           <div className="w-full max-w-sm rounded-2xl border border-zinc-700 bg-[#1c1c1f] p-5 shadow-2xl">
-            <h3 className="mb-2 text-[15px] font-bold text-zinc-100">Kaydedilmemiş Değişiklikler</h3>
+            <h3 className="mb-2 text-[15px] font-bold text-zinc-100">{t("studio.unsavedChanges")}</h3>
             <p className="mb-4 text-[13px] leading-relaxed text-zinc-400">
-              Bu işleme geçmeden önce projendeki değişiklikler kaydedilmemiş durumda.
-              Kaydetmeden devam etmek istediğine emin misin?
+              {t("studio.discardMsg")}
             </p>
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setPendingDiscard(null)}
                 className="rounded-lg px-4 py-2 text-[13px] text-zinc-300 transition hover:bg-zinc-700/40"
               >
-                Vazgeç
+                {t("studio.cancel")}
               </button>
               <button
                 onClick={handleDiscardProceed}
                 className="rounded-lg bg-amber-500 px-4 py-2 text-[13px] font-semibold text-black transition hover:bg-amber-400"
               >
-                Kaydetmeden Devam Et
+                {t("studio.continue")}
               </button>
             </div>
           </div>

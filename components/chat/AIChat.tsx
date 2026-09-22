@@ -32,6 +32,7 @@ import type { ApiKeys, ChatAction, ChatMessage } from "@/lib/types";
 import { AUTO_ROUTER_ID, getProvider, PROVIDERS } from "@/lib/providers";
 import { chatCompletions } from "@/lib/ai/client";
 import { smartRoute } from "@/lib/ai/router";
+import { useLang } from "@/lib/language-context";
 import {
   buildDebugPrompt,
   buildRefactorPrompt,
@@ -78,33 +79,21 @@ const QUICK_ACTIONS: { action: ChatAction; label: string; icon: React.ReactNode 
   { action: "ui", label: "Modern UI Oluştur", icon: <Sparkles size={13} /> },
 ];
 
-const ACTION_LABELS: Record<ChatAction, string> = {
-  debug: "🔍 **Kod Analizi & Hata Bulma** isteği gönderdim. Kodun inceleniyor...",
-  refactor: "✨ **Refactor (Kodu Yeniden Yaz)** isteği gönderdim. Kodun yeniden yazılıyor...",
-  ui: "🎨 **Modern UI Oluşturma** isteği gönderdim. Arayüz tasarlanıyor...",
-  chat: "",
-};
-
-const WELCOME = `Merhaba! Ben **ZelixVary AI Asistan** 👋
-
-Aşağıdakileri yapabilirim:
-- 🔍 **Kod analizi & hata bulma** — editördeki kodunu inceleyip düzeltilmiş halini veririm
-- ✨ **Refactor** — kodunu temiz ve performanslı hale getiririm
-- 🎨 **Modern UI oluşturma** — "bana modern bir dashboard tasarla" gibi isteklerle hazır arayüz üretirim
-- 💬 **Genel kodlama** — her türlü algoritma ve kod sorusu
-
-Desteklenen modeller:
-✦ Gemini · 🐋 DeepSeek · 🕶 Grok · ◉ OpenAI · 🧠 Claude
-
-Üstteki model menüsünden **🤖 Auto Router**'ı seçersen; istemine göre en uygun yapay zekayı ben seçerim.
-Ayrıca **Ayarlar**'dan her model için hangi sürümü kullanacağını seçebilirsin.`;
-
 const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
   { code, files = {}, apiKeys, projectId, chatLabel, onApplyCode, onOpenSettings },
   ref,
 ) {
   const { user } = useAuth();
+  const { t } = useLang();
   const [messages, setMessages] = useState<UiMessage[]>([]);
+
+  /** Hızlı aksiyon etiketi (i18n) */
+  function getActionLabel(action: ChatAction): string {
+    if (action === "debug") return t("act.debug");
+    if (action === "refactor") return t("act.refactor");
+    if (action === "ui") return t("act.ui");
+    return "";
+  }
   const [input, setInput] = useState("");
   const [isBusy, setIsBusy] = useState(false);
   const [selection, setSelection] = useState<string>(AUTO_ROUTER_ID);
@@ -440,8 +429,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
       pushMessage({ role: "user", content: prompt });
       pushMessage({
         role: "assistant",
-        content:
-          "⚠️ **API anahtarı tanımlı değil.**\n\nSağ üstteki **Ayarlar** (⚙️) butonundan Gemini, DeepSeek, Grok veya OpenAI anahtarlarını ekle. Anahtarlar yalnızca tarayıcında (localStorage) saklanır.",
+        content: t("chat.noKeysMsg"),
         providerLabel: "ZelixVary",
       });
       setInput("");
@@ -457,8 +445,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
     if (!hasKeys) {
       pushMessage({
         role: "assistant",
-        content:
-          "⚠️ Bu işlem için önce bir API anahtarı gerekli. **Ayarlar** (⚙️) butonundan anahtar ekle.",
+        content: t("chat.noKeysAction"),
         providerLabel: "ZelixVary",
       });
       return;
@@ -479,7 +466,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
       chat: input,
     };
     const history = messages;
-    pushMessage({ role: "user", content: ACTION_LABELS[action] });
+    pushMessage({ role: "user", content: getActionLabel(action) });
     sendToAi(prompts[action], history);
   }
 
@@ -502,7 +489,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
     };
     const history = messages;
     const extraLabel = extra ? ` (Ekstra: ${extra.slice(0, 50)}${extra.length > 50 ? "..." : ""})` : "";
-    pushMessage({ role: "user", content: ACTION_LABELS[target] + extraLabel });
+    pushMessage({ role: "user", content: getActionLabel(target) + extraLabel });
     sendToAi(prompts[target], history);
   }
 
@@ -688,7 +675,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                 <Sparkles size={28} className="text-white" />
               </div>
               <div className="rounded-xl border border-zinc-800 bg-[#232328] p-4 text-left">
-                <Markdown text={WELCOME} />
+                <Markdown text={t("chat.welcome")} />
               </div>
               {!hasKeys && (
                 <button
@@ -696,7 +683,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                   className="mt-4 flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-violet-500 active:scale-95"
                 >
                   <Settings size={15} />
-                  API Anahtarlarını Ayarla
+                  {t("chat.setupKeys")}
                 </button>
               )}
             </div>
@@ -760,7 +747,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
               }
             }}
             rows={1}
-            placeholder={hasKeys ? "AI'a bir şeyler yaz... (Enter gönderir, Shift+Enter satır)" : "Önce API anahtarı ekle (⚙️)"}
+            placeholder={hasKeys ? t("chat.placeholder") : t("chat.placeholderNoKey")}
             className="max-h-32 min-h-[38px] flex-1 resize-none rounded-lg border border-zinc-700 bg-[#101013] px-3 py-2 text-[13px] text-zinc-100 placeholder-zinc-500 outline-none transition focus:border-violet-500"
           />
           <button
@@ -822,11 +809,11 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
               value={saveName}
               onChange={(e) => setSaveName(e.target.value)}
               maxLength={60}
-              placeholder="Örn: Hesap makinesi sohbeti"
+              placeholder={t("chat.chatNamePh")}
               className="mb-4 w-full rounded-lg border border-zinc-700 bg-[#101013] px-3 py-2 text-[13px] text-zinc-100 placeholder-zinc-600 outline-none transition focus:border-violet-500"
             />
 
-            <p className="mb-2 text-[12px] font-medium text-zinc-400">Şifreleme sistemi olsun mu?</p>
+            <p className="mb-2 text-[12px] font-medium text-zinc-400">{t("chat.encryption")}</p>
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={() => setSaveLock("locked")}

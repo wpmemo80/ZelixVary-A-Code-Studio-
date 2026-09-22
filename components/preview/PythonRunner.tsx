@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Bug, CheckCircle2, Loader2, Play, Square, Trash2, Send } from "lucide-react";
+import { useLang } from "@/lib/language-context";
 
 interface PythonRunnerProps {
   code: string;
@@ -104,6 +105,7 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
   const [running, setRunning] = useState(false);
   const [waitingInput, setWaitingInput] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const { t } = useLang();
   const workerRef = useRef<Worker | null>(null);
   const lineIdRef = useRef(1);
   const statusRef = useRef<"loading" | "ready" | "error">("loading");
@@ -143,18 +145,18 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
         runningRef.current = false;
         setRunning(false);
         setWaitingInput(false);
-        pushInfo(`✓ program ${msg.duration} ms'de tamamlandı`);
+        pushInfo(`✓ ${msg.duration} ${t("py.done")}`);
         break;
       case "run-error":
         runningRef.current = false;
         setRunning(false);
         setWaitingInput(false);
-        pushInfo(`Hata (${msg.duration} ms):`);
+        pushInfo(`${t("py.errorLabel")} (${msg.duration} ms):`);
         pushLines("err", msg.message);
         break;
       case "input-request":
         setWaitingInput(true);
-        pushLines("input", "⏳ Giriş bekleniyor...");
+        pushLines("input", t("py.inputPending"));
         // Input alanına odaklan
         setTimeout(() => inputRef.current?.focus(), 100);
         break;
@@ -210,7 +212,7 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
 
   function handleInterrupt() {
     if (!runningRef.current) return;
-    pushInfo("— program kullanıcı tarafından durduruldu —");
+    pushInfo(t("py.stopped"));
     // Sonsuz döngüyü durdurmanın en güvenilir yolu worker'ı sonlandırıp yeniden başlatmaktır.
     statusRef.current = "loading";
     setStatus("loading");
@@ -240,7 +242,7 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
             status === "ready" ? "text-emerald-400" : status === "error" ? "text-red-400" : "text-zinc-400"
           }`}
         >
-          {status === "ready" ? "● Hazır" : status === "error" ? "✕ Hata" : "○ Python yükleniyor..."}
+          {status === "ready" ? t("py.ready") : status === "error" ? t("py.error") : t("py.loading")}
         </span>
         <span className="text-[11px] text-zinc-600">
           {fileName ?? "main.py"} · Pyodide {PYODIDE_VERSION}
@@ -253,24 +255,24 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
             title="Çalıştır"
           >
             {running ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} />}
-            Çalıştır
+            {t("py.run")}
           </button>
           <button
             onClick={handleInterrupt}
             disabled={!running}
             className="flex h-7 items-center gap-1.5 rounded px-2 text-[11px] font-medium text-red-300 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-40"
-            title="Programı durdur (sonsuz döngü vb.)"
+            title={t("py.stop")}
           >
             <Square size={11} />
-            Durdur
+            {t("py.stop")}
           </button>
           <button
             onClick={() => setLines([])}
             className="flex h-7 items-center gap-1.5 rounded px-2 text-[11px] text-zinc-400 transition hover:bg-zinc-700/40 hover:text-zinc-100"
-            title="Çıktıyı temizle"
+            title={t("py.clear")}
           >
             <Trash2 size={12} />
-            Temizle
+            {t("py.clear")}
           </button>
         </div>
       </div>
@@ -279,7 +281,7 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
         {status === "loading" && (
           <div className="flex items-center gap-2 py-2 text-[12px] text-zinc-500">
             <Loader2 size={14} className="animate-spin text-violet-400" />
-            Python motoru indiriliyor (tek seferlik ~10 MB)...
+            {t("py.loadingMsg")}
           </div>
         )}
         {status === "error" && (
@@ -291,16 +293,15 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
         {status === "ready" && lines.length === 0 && (
           <div>
             <p className="text-zinc-600">
-              {"Python REPL"} — kod burada çalışır, <span className="text-zinc-500">print()</span> çıktıları ve
-              hatalar aşağıda görünür.
+              {t("py.emptyTitle")} — {t("py.emptyDesc")}
             </p>
             <p className="mt-1 text-zinc-700">
-              <span className="text-emerald-500/70">$</span> her düzenlemede otomatik çalıştır, ya da Çalıştır butonuna bas.
+              <span className="text-emerald-500/70">$</span> {t("py.autoRun")}
               <br />
-              <span className="text-zinc-700">Not:</span>{" "}
-              <span className="font-mono text-[11.5px]">input()</span> artık destekleniyor! Aşağıdaki alandan cevap girebilirsin.
+              <span className="text-zinc-700">Note:</span>{" "}
+              <span className="font-mono text-[11.5px]">input()</span> {t("py.inputNote")}
               <br />
-              Sonsuz döngü oluşursa <span className="text-red-300">Durdur</span> ile kes.
+              {t("py.infiniteLoop")} <span className="text-red-300">{t("py.stop")}</span> {t("py.infiniteLoopEnd")}
             </p>
           </div>
         )}
@@ -339,9 +340,9 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
             <CheckCircle2 size={11} className="text-emerald-500/60" />
             {running
               ? waitingInput
-                ? "giriş bekleniyor..."
-                : "çalışıyor..."
-              : "beklemede — kod değişince otomatik çalışır"}
+                ? t("py.waitingInput")
+                : t("py.running")
+              : t("py.idle")}
           </div>
         )}
       </div>
@@ -350,7 +351,7 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
       {waitingInput && (
         <div className="shrink-0 border-t border-amber-500/30 bg-amber-500/5 px-3 py-2">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] font-medium text-amber-400">🐍 Input:</span>
+            <span className="text-[11px] font-medium text-amber-400">🐍 {t("py.inputLabel")}</span>
             <input
               ref={inputRef}
               type="text"
@@ -362,7 +363,7 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
                   submitInput();
                 }
               }}
-              placeholder="Cevabınızı yazın..."
+              placeholder={t("py.inputPh")}
               className="min-w-0 flex-1 rounded-lg border border-amber-500/30 bg-[#101013] px-3 py-1.5 font-mono text-[12.5px] text-zinc-100 placeholder-zinc-600 outline-none transition focus:border-amber-500"
               autoFocus
             />
@@ -375,7 +376,7 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
             </button>
           </div>
           <p className="mt-1 text-[10px] text-zinc-600">
-            Enter ile gönder · input() artık çalışıyor!
+            {t("py.inputHint")}
           </p>
         </div>
       )}

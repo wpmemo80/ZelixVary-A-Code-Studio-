@@ -9,6 +9,7 @@ import {
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { Loader2, Lock, Mail, User as UserIcon, X, Zap, FolderOpen, MessagesSquare } from "lucide-react";
 import { getFirebase } from "@/lib/firebase/client";
+import { useLang } from "@/lib/language-context";
 
 export type AuthMode = "login" | "register";
 
@@ -24,8 +25,30 @@ export default function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProp
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const { t, lang } = useLang();
 
   const isRegister = mode === "register";
+
+  // Hata mesajları için i18n
+  const errorMessages: Record<string, { tr: string; en: string }> = {
+    "auth/email-already-in-use": { tr: "Bu e-posta zaten kayıtlı. Giriş yapmayı dene.", en: "This email is already registered. Try logging in." },
+    "auth/invalid-email": { tr: "Geçersiz e-posta adresi.", en: "Invalid email address." },
+    "auth/weak-password": { tr: "Şifre çok zayıf (en az 6 karakter).", en: "Password too weak (min 6 characters)." },
+    "auth/user-not-found": { tr: "Bu e-posta ile hesap bulunamadı.", en: "No account found with this email." },
+    "auth/wrong-password": { tr: "Şifre hatalı.", en: "Wrong password." },
+    "auth/invalid-credential": { tr: "E-posta veya şifre hatalı.", en: "Invalid email or password." },
+    "auth/too-many-requests": { tr: "Çok fazla deneme yapıldı. Biraz sonra tekrar dene.", en: "Too many attempts. Try again later." },
+    "auth/network-request-failed": { tr: "Ağ hatası. İnternet bağlantını kontrol et.", en: "Network error. Check your connection." },
+  };
+
+  const validationError = {
+    tr: "E-posta gerekli ve şifre en az 6 karakter olmalı.",
+    en: "Email is required and password must be at least 6 characters.",
+  };
+  const nameError = {
+    tr: "İsim alanı zorunludur.",
+    en: "Name field is required.",
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -33,11 +56,11 @@ export default function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProp
     setError(null);
 
     if (!email.trim() || password.length < 6) {
-      setError("E-posta gerekli ve şifre en az 6 karakter olmalı.");
+      setError(validationError[lang]);
       return;
     }
     if (isRegister && !displayName.trim()) {
-      setError("İsim alanı zorunludur.");
+      setError(nameError[lang]);
       return;
     }
 
@@ -64,17 +87,8 @@ export default function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProp
       onClose();
     } catch (err) {
       const code = (err as { code?: string }).code;
-      const messages: Record<string, string> = {
-        "auth/email-already-in-use": "Bu e-posta zaten kayıtlı. Giriş yapmayı dene.",
-        "auth/invalid-email": "Geçersiz e-posta adresi.",
-        "auth/weak-password": "Şifre çok zayıf (en az 6 karakter).",
-        "auth/user-not-found": "Bu e-posta ile hesap bulunamadı.",
-        "auth/wrong-password": "Şifre hatalı.",
-        "auth/invalid-credential": "E-posta veya şifre hatalı.",
-        "auth/too-many-requests": "Çok fazla deneme yapıldı. Biraz sonra tekrar dene.",
-        "auth/network-request-failed": "Ağ hatası. İnternet bağlantını kontrol et.",
-      };
-      setError(messages[code ?? ""] ?? (err instanceof Error ? err.message : "Bilinmeyen hata"));
+      const msg = errorMessages[code ?? ""];
+      setError(msg ? msg[lang] : (err instanceof Error ? err.message : (lang === "tr" ? "Bilinmeyen hata" : "Unknown error")));
     } finally {
       setBusy(false);
     }
@@ -101,26 +115,24 @@ export default function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProp
             {isRegister ? <Zap size={22} className="text-white" /> : <Lock size={20} className="text-white" />}
           </div>
           <h2 className="text-xl font-bold text-zinc-100">
-            {isRegister ? "ZelixVary'ye Katıl" : "Tekrar Hoş Geldin"}
+            {isRegister ? t("auth.register.title") : t("auth.login.title")}
           </h2>
           <p className="mt-1 text-[13px] text-zinc-400">
-            {isRegister
-              ? "Hesabını oluştur, projelerin ve AI sohbet geçmişlerin bulutta güvende kalsın."
-              : "Projelerine ve sohbet geçmişine kaldığın yerden devam et."}
+            {isRegister ? t("auth.register.sub") : t("auth.login.sub")}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3 px-6 py-5">
           {isRegister && (
             <div className="group">
-              <label className="mb-1.5 block text-[12px] font-medium text-zinc-400">İsim</label>
+              <label className="mb-1.5 block text-[12px] font-medium text-zinc-400">{t("auth.name")}</label>
               <div className="flex items-center gap-2 rounded-xl border border-zinc-700 bg-[#101013] px-3 py-2.5 transition focus-within:border-violet-500">
                 <UserIcon size={15} className="shrink-0 text-zinc-500" />
                 <input
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Adın"
+                  placeholder={t("auth.namePh")}
                   className="min-w-0 flex-1 bg-transparent text-[13.5px] text-zinc-100 placeholder-zinc-600 outline-none"
                   autoComplete="name"
                 />
@@ -129,14 +141,14 @@ export default function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProp
           )}
 
           <div>
-            <label className="mb-1.5 block text-[12px] font-medium text-zinc-400">E-posta</label>
+            <label className="mb-1.5 block text-[12px] font-medium text-zinc-400">{t("auth.email")}</label>
             <div className="flex items-center gap-2 rounded-xl border border-zinc-700 bg-[#101013] px-3 py-2.5 transition focus-within:border-violet-500">
               <Mail size={15} className="shrink-0 text-zinc-500" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="ornek@email.com"
+                placeholder={t("auth.emailPh")}
                 className="min-w-0 flex-1 bg-transparent text-[13.5px] text-zinc-100 placeholder-zinc-600 outline-none"
                 autoComplete="email"
               />
@@ -144,14 +156,14 @@ export default function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProp
           </div>
 
           <div>
-            <label className="mb-1.5 block text-[12px] font-medium text-zinc-400">Şifre</label>
+            <label className="mb-1.5 block text-[12px] font-medium text-zinc-400">{t("auth.password")}</label>
             <div className="flex items-center gap-2 rounded-xl border border-zinc-700 bg-[#101013] px-3 py-2.5 transition focus-within:border-violet-500">
               <Lock size={15} className="shrink-0 text-zinc-500" />
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder={t("auth.passwordPh")}
                 className="min-w-0 flex-1 bg-transparent text-[13.5px] text-zinc-100 placeholder-zinc-600 outline-none"
                 autoComplete={isRegister ? "new-password" : "current-password"}
               />
@@ -172,23 +184,23 @@ export default function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProp
             {busy ? (
               <>
                 <Loader2 size={15} className="animate-spin" />
-                {isRegister ? "Hesap oluşturuluyor..." : "Giriş yapılıyor..."}
+                {isRegister ? t("auth.creating") : t("auth.logging")}
               </>
             ) : isRegister ? (
-              "Hesap Oluştur"
+              t("auth.create")
             ) : (
-              "Giriş Yap"
+              t("auth.login")
             )}
           </button>
 
           <p className="pt-1 text-center text-[12.5px] text-zinc-500">
-            {isRegister ? "Zaten hesabın var mı?" : "Hesabın yok mu?"}{" "}
+            {isRegister ? t("auth.hasAccount") : t("auth.noAccount")}{" "}
             <button
               type="button"
               onClick={() => onSwitchMode(isRegister ? "login" : "register")}
               className="font-semibold text-violet-400 transition hover:text-violet-300"
             >
-              {isRegister ? "Giriş Yap" : "Hemen Kayıt Ol"}
+              {isRegister ? t("nav.login") : t("auth.signupNow")}
             </button>
           </p>
         </form>
@@ -196,13 +208,13 @@ export default function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProp
         {isRegister && (
           <div className="flex items-center justify-center gap-4 border-t border-zinc-800/70 bg-[#111116] px-6 py-3 text-[11px] text-zinc-500">
             <span className="flex items-center gap-1">
-              <FolderOpen size={12} className="text-violet-400" /> Bulut projeler
+              <FolderOpen size={12} className="text-violet-400" /> {t("auth.cloudProjects")}
             </span>
             <span className="flex items-center gap-1">
-              <MessagesSquare size={12} className="text-violet-400" /> AI geçmişi
+              <MessagesSquare size={12} className="text-violet-400" /> {t("auth.aiHistory")}
             </span>
             <span className="flex items-center gap-1">
-              <Zap size={12} className="text-violet-400" /> Hızlı giriş
+              <Zap size={12} className="text-violet-400" /> {t("auth.quickLogin")}
             </span>
           </div>
         )}

@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { ChatMessage, ProviderId } from "@/lib/types";
-import { getProvider, providerBaseUrl } from "@/lib/providers";
+import { getProvider, providerBaseUrl, PROVIDERS } from "@/lib/providers";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
 
-const VALID_PROVIDERS: ProviderId[] = ["gemini", "deepseek", "grok", "openai", "claude"];
+// Sağlayıcı listesi PROVIDERS'tan türetilir — yeni sağlayıcı ekleyince
+// route otomatik olarak tanır.
+const VALID_PROVIDERS: ProviderId[] = PROVIDERS.map((p) => p.id);
 
 interface Payload {
   provider?: ProviderId;
@@ -118,7 +120,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Geçersiz istek gövdesi." }, { status: 400 });
   }
 
-  const { provider, model, apiKey, messages, temperature = 0.7, stream = true } = body;
+  const { provider, messages, temperature = 0.7, stream = true } = body;
+  // API anahtarı ve model adı birebir API'ye gider — baş/son boşluklar ve
+  // satır sonları temizlenir. (Örn. " sk-abc " gibiyse Authorization header
+  // 401/404 üretirdi; trim ile düzelir. Model string'i de aynen korunur.)
+  const apiKey = (body.apiKey ?? "").trim();
+  const model = (body.model ?? "").trim();
 
   if (!provider || !VALID_PROVIDERS.includes(provider)) {
     return NextResponse.json({ error: "Bilinmeyen sağlayıcı." }, { status: 400 });

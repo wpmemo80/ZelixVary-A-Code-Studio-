@@ -75,7 +75,17 @@ export function smartRoute(prompt: string, available: ProviderId[]): RouterDecis
     }
   }
 
-  const generalOrder: ProviderId[] = ["grok", "openai", "claude", "deepseek", "gemini"];
+  const generalOrder: ProviderId[] = [
+    "grok",
+    "openai",
+    "claude",
+    "deepseek",
+    "gemini",
+    "mistral",
+    "groq",
+    "cerebras",
+    "openrouter",
+  ];
   for (const id of generalOrder) {
     if (available.includes(id)) {
       const name = getProvider(id).short;

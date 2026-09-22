@@ -14,45 +14,48 @@ import {
   Wand2,
 } from "lucide-react";
 import AuthModal, { type AuthMode } from "@/components/auth/AuthModal";
+import LanguageSwitcher from "@/components/settings/LanguageSwitcher";
+import { useLang } from "@/lib/language-context";
 
 export default function LandingPage() {
   const [authMode, setAuthMode] = useState<AuthMode | null>(null);
+  const { t } = useLang();
 
   const features = [
     {
       icon: <Play size={16} />,
-      title: "Canlı Önizleme",
-      desc: "HTML, CSS, JS ve Python kodunu tarayıcıyı terk etmeden anında çalıştır.",
+      title: t("feat.live.title"),
+      desc: t("feat.live.desc"),
       color: "text-sky-400",
     },
     {
       icon: <Sparkles size={16} />,
-      title: "4+ Yapay Zeka",
-      desc: "Gemini, DeepSeek, Grok ve OpenAI — ZelixVary Auto Router en iyisini seçer.",
+      title: t("feat.ai.title"),
+      desc: t("feat.ai.desc"),
       color: "text-fuchsia-400",
     },
     {
       icon: <Wand2 size={16} />,
-      title: "Tek Tıkla Uygula",
-      desc: "AI'ın ürettiği kodu doğrudan editöre aktar, hata bul, refactor et.",
+      title: t("feat.apply.title"),
+      desc: t("feat.apply.desc"),
       color: "text-emerald-400",
     },
     {
       icon: <FolderOpen size={16} />,
-      title: "Bulut Projeler",
-      desc: "Klasörlerini içe aktar, dosyalarını düzenle, hepsi hesabında saklansın.",
+      title: t("feat.cloud.title"),
+      desc: t("feat.cloud.desc"),
       color: "text-amber-400",
     },
     {
       icon: <MessagesSquare size={16} />,
-      title: "Kalıcı Sohbet Geçmişi",
-      desc: "AI sohbetlerin hesabına kaydedilir, kaldığın yerden devam edersin.",
+      title: t("feat.chat.title"),
+      desc: t("feat.chat.desc"),
       color: "text-violet-400",
     },
     {
       icon: <FileCode2 size={16} />,
-      title: "Monaco Editörü",
-      desc: "VS Code gücünde editör: sözdizimi vurgulama, otomatik tamamlama, satır numaraları.",
+      title: t("feat.editor.title"),
+      desc: t("feat.editor.desc"),
       color: "text-sky-400",
     },
   ];
@@ -60,7 +63,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#0b0b0f] text-zinc-200">
       {/* Navbar */}
-      <nav className="flex items-center justify-between border-b border-zinc-800/70 bg-[#0b0b0f]/80 px-6 py-4 backdrop-blur">
+      <nav className="relative z-50 flex items-center justify-between border-b border-zinc-800/70 bg-[#0b0b0f]/80 px-6 py-4 backdrop-blur">
         <div className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-600 shadow-lg shadow-violet-900/50">
             <FileCode2 size={18} className="text-white" />
@@ -69,23 +72,24 @@ export default function LandingPage() {
             <p className="text-[16px] font-bold tracking-tight text-zinc-100">
               Zelix<span className="text-violet-400">Vary</span>
             </p>
-            <p className="text-[10.5px] text-zinc-500">Multi-AI Code Studio</p>
+            <p className="text-[10.5px] text-zinc-500">{t("footer.tagline")}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           <button
             onClick={() => setAuthMode("login")}
             className="flex items-center gap-2 rounded-lg border border-zinc-700 px-4 py-2 text-[13px] font-medium text-zinc-300 transition hover:border-violet-500/60 hover:text-violet-300"
           >
             <LogIn size={15} />
-            Giriş Yap
+            {t("nav.login")}
           </button>
           <button
             onClick={() => setAuthMode("register")}
             className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-2 text-[13px] font-semibold text-white shadow-lg shadow-violet-900/40 transition hover:from-violet-500 hover:to-fuchsia-500 active:scale-95"
           >
             <UserPlus size={15} />
-            Kayıt Ol
+            {t("nav.register")}
           </button>
         </div>
       </nav>
@@ -96,18 +100,17 @@ export default function LandingPage() {
         <div className="relative mx-auto max-w-3xl">
           <div className="mx-auto mb-6 flex w-fit items-center gap-2 rounded-full border border-violet-500/30 bg-violet-500/10 px-4 py-1.5 text-[12px] font-medium text-violet-300">
             <Sparkles size={13} />
-            Gemini • DeepSeek • Grok • OpenAI destekli
+            {t("hero.badge")}
           </div>
           <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-zinc-50 sm:text-5xl">
-            Kod Yaz, Önizle,
+            {t("hero.title1")}
             <br />
             <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-sky-400 bg-clip-text text-transparent">
-              Yapay Zekaya Bırak.
+              {t("hero.title2")}
             </span>
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-zinc-400">
-            ZelixVary; VS Code deneyimini tarayıcıya taşır. Monaco editörü, canlı önizleme ve
-            istemine göre en uygun modeli otomatik seçen akıllı yönlendirici — hepsi tek yerde.
+            {t("hero.desc")}
           </p>
           <div className="mt-8 flex items-center justify-center gap-3">
             <button
@@ -115,18 +118,18 @@ export default function LandingPage() {
               className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-7 py-3 text-[14px] font-semibold text-white shadow-xl shadow-violet-900/50 transition hover:from-violet-500 hover:to-fuchsia-500 active:scale-[0.97]"
             >
               <UserPlus size={16} />
-              Ücretsiz Başla
+              {t("hero.cta")}
             </button>
             <button
               onClick={() => setAuthMode("login")}
               className="flex items-center gap-2 rounded-xl border border-zinc-700 px-7 py-3 text-[14px] font-medium text-zinc-300 transition hover:border-violet-500/60 hover:text-violet-300"
             >
               <Play size={15} />
-              Canlı Demo
+              {t("hero.demo")}
             </button>
           </div>
           <p className="mt-4 text-[12px] text-zinc-600">
-            Kayıt gerektirmez mi? Hayır — tüm özellikler için ücretsiz hesap yeterli.
+            {t("hero.note")}
           </p>
         </div>
       </section>
@@ -134,7 +137,7 @@ export default function LandingPage() {
       {/* Özellikler */}
       <section className="mx-auto max-w-5xl px-6 pb-20">
         <h2 className="mb-8 text-center text-2xl font-bold text-zinc-100">
-          Neden <span className="text-violet-400">ZelixVary</span>?
+          {t("features.title")} <span className="text-violet-400">{t("features.titleAccent")}</span>
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f) => (
@@ -159,15 +162,15 @@ export default function LandingPage() {
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 text-[12px] text-zinc-600 sm:flex-row">
           <div className="flex items-center gap-2">
             <Bot size={14} className="text-violet-500" />
-            ZelixVary — Multi-AI Code Studio
+            ZelixVary — {t("footer.tagline")}
           </div>
           <div className="flex items-center gap-4">
-            <span>API anahtarların yalnızca tarayıcında saklanır 🔒</span>
+            <span>{t("footer.security")}</span>
             <span className="flex items-center gap-1.5">
-              <Heart size={14} className="text-violet-500" /> ZelixYzlm group tarafından
+              <Heart size={14} className="text-violet-500" /> {t("footer.by")}
             </span>
             <span className="flex items-center gap-1.5 text-violet-400/80">
-              👑 Emir Özer (15)
+              {t("footer.author")}
             </span>
           </div>
         </div>

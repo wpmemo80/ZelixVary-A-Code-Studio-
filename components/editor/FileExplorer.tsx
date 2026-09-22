@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { FileCode2, FilePlus2, Folder, Trash2 } from "lucide-react";
+import { useLang } from "@/lib/language-context";
 
 interface FileExplorerProps {
   files: Record<string, string>;
@@ -85,6 +86,7 @@ export default function FileExplorer({
 }: FileExplorerProps) {
   const [creating, setCreating] = useState(false);
   const [newPath, setNewPath] = useState("");
+  const { t } = useLang();
 
   const paths = Object.keys(files).sort((a, b) => a.localeCompare(b));
 
@@ -104,12 +106,12 @@ export default function FileExplorer({
     <div className="flex h-full w-full flex-col bg-[#1c1c1f]">
       <div className="flex h-8 shrink-0 items-center justify-between border-b border-zinc-800 px-3">
         <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-          <Folder size={12} /> Dosyalar
+          <Folder size={12} /> {t("files.title")}
         </span>
         <button
           onClick={() => setCreating((v) => !v)}
           className="flex h-6 w-6 items-center justify-center rounded text-zinc-400 transition hover:bg-zinc-700/50 hover:text-zinc-100"
-          title="Yeni dosya"
+          title={t("files.new")}
         >
           <FilePlus2 size={13} />
         </button>
@@ -136,7 +138,7 @@ export default function FileExplorer({
             onClick={handleCreate}
             className="flex h-6 shrink-0 items-center rounded bg-violet-600 px-2 text-[11px] font-medium text-white transition hover:bg-violet-500"
           >
-            Ekle
+            {t("files.add")}
           </button>
         </div>
       )}
@@ -145,16 +147,16 @@ export default function FileExplorer({
         {paths.length === 0 ? (
           <div className="px-3 py-6 text-center">
             <FileCode2 size={28} className="mx-auto mb-2 text-zinc-700" />
-            <p className="text-[12px] font-medium text-zinc-500">Henüz dosya yok</p>
+            <p className="text-[12px] font-medium text-zinc-500">{t("files.empty")}</p>
             <p className="mt-1 text-[11px] text-zinc-600">
-              + butonuna basarak yeni dosya oluştur
+              {t("files.emptyHint")}
             </p>
             <button
               onClick={() => setCreating(true)}
               className="mt-3 flex items-center gap-1.5 mx-auto rounded-lg border border-violet-500/50 bg-violet-500/10 px-3 py-1.5 text-[11px] font-medium text-violet-300 transition hover:bg-violet-500/20"
             >
               <FilePlus2 size={12} />
-              Yeni Dosya Oluştur
+              {t("files.createBtn")}
             </button>
           </div>
         ) : (
@@ -184,7 +186,7 @@ export default function FileExplorer({
                     onDeleteFile(path);
                   }}
                   className="hidden h-5 w-5 shrink-0 items-center justify-center rounded text-zinc-600 transition hover:bg-red-500/20 hover:text-red-400 group-hover:flex"
-                  title="Dosyayı sil"
+                  title={t("files.delete")}
                 >
                   <Trash2 size={12} />
                 </button>
@@ -196,7 +198,7 @@ export default function FileExplorer({
 
       <div className="shrink-0 border-t border-zinc-800 px-3 py-1.5">
         <p className="text-[10.5px] text-zinc-600">
-          {paths.length} dosya · {currentFile ? "düzenleniyor" : "seçim yok"}
+          {paths.length} {t("files.count")} · {currentFile ? t("files.editing") : t("files.noSelection")}
         </p>
       </div>
     </div>

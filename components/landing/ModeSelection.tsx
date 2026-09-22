@@ -9,6 +9,8 @@ import {
   Info,
   AlertTriangle,
 } from "lucide-react";
+import { useLang } from "@/lib/language-context";
+import LanguageSwitcher from "@/components/settings/LanguageSwitcher";
 
 interface ModeSelectionProps {
   onSelect: (mode: "local" | "file") => void;
@@ -16,19 +18,25 @@ interface ModeSelectionProps {
 
 export default function ModeSelection({ onSelect }: ModeSelectionProps) {
   const [hovered, setHovered] = useState<"local" | "file" | null>(null);
+  const { t } = useLang();
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0b0b0f] px-4">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-[#0b0b0f] px-4">
+      {/* Dil değiştirici */}
+      <div className="absolute right-4 top-4 z-50">
+        <LanguageSwitcher />
+      </div>
+
       {/* Hoşgeldiniz Başlığı */}
       <div className="mb-2 text-center">
         <h1 className="text-4xl font-extrabold tracking-tight text-zinc-50 sm:text-5xl">
           ZelixVary{" "}
           <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-sky-400 bg-clip-text text-transparent">
-            Hoşgeldiniz
+            {t("mode.welcome")}
           </span>
         </h1>
         <p className="mt-3 text-[15px] text-zinc-400">
-          Vibe Coding için en iyi ortam
+          {t("mode.subtitle")}
         </p>
       </div>
 
@@ -45,7 +53,6 @@ export default function ModeSelection({ onSelect }: ModeSelectionProps) {
               : "border-zinc-800 bg-[#131318] hover:border-zinc-700"
           }`}
         >
-          {/* Gradient arka plan */}
           <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-violet-600/10 blur-3xl transition-opacity duration-500 group-hover:opacity-100 opacity-0" />
 
           <div className="relative">
@@ -54,11 +61,11 @@ export default function ModeSelection({ onSelect }: ModeSelectionProps) {
             </div>
 
             <h2 className="mb-2 text-[18px] font-bold text-zinc-100">
-              Local Kodla
+              {t("mode.local.title")}
             </h2>
 
             <p className="mb-4 text-[13px] leading-relaxed text-zinc-400">
-              Bulut üzerinde deneme amaçlı bir sistemdir.
+              {t("mode.local.desc")}
             </p>
 
             <div className="flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2.5">
@@ -67,14 +74,14 @@ export default function ModeSelection({ onSelect }: ModeSelectionProps) {
                 className="mt-0.5 shrink-0 text-amber-400"
               />
               <p className="text-[11.5px] leading-relaxed text-amber-300/90">
-                <span className="font-semibold">UYARI:</span> Tarayıcınızı
-                kapatır veya sekmeyi kapatırsanız her şey silinir.
+                <span className="font-semibold">{t("mode.local.warning")}</span>{" "}
+                {t("mode.local.warningText")}
               </p>
             </div>
 
             <div className="mt-4 flex items-center gap-2 text-[12px] text-zinc-500">
               <FileCode2 size={13} className="text-violet-400" />
-              Geçici kodlama stüdyosu
+              {t("mode.local.badge")}
             </div>
           </div>
         </button>
@@ -90,7 +97,6 @@ export default function ModeSelection({ onSelect }: ModeSelectionProps) {
               : "border-zinc-800 bg-[#131318] hover:border-zinc-700"
           }`}
         >
-          {/* Gradient arka plan */}
           <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-600/10 blur-3xl transition-opacity duration-500 group-hover:opacity-100 opacity-0" />
 
           <div className="relative">
@@ -99,25 +105,24 @@ export default function ModeSelection({ onSelect }: ModeSelectionProps) {
             </div>
 
             <h2 className="mb-2 text-[18px] font-bold text-zinc-100">
-              Dosya Üzerine Kodla
+              {t("mode.file.title")}
             </h2>
 
             <p className="mb-4 text-[13px] leading-relaxed text-zinc-400">
-              Eklediğiniz dosyayı alır ve içerisine yazdığınız her şeyi o
-              dosyaya yazar. <span className="font-semibold text-zinc-300">Kalıcıdır.</span>
+              {t("mode.file.desc1")}{" "}
+              <span className="font-semibold text-zinc-300">{t("mode.file.desc2")}</span>
             </p>
 
             <div className="flex items-start gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2.5">
               <Info size={16} className="mt-0.5 shrink-0 text-emerald-400" />
               <p className="text-[11.5px] leading-relaxed text-emerald-300/90">
-                Kaydedip çıkarsanız aynı dosyadan içeriği değiştirilmiş olarak
-                çıkar.
+                {t("mode.file.info")}
               </p>
             </div>
 
             <div className="mt-4 flex items-center gap-2 text-[12px] text-zinc-500">
               <FolderOpen size={13} className="text-emerald-400" />
-              Kalıcı proje modu
+              {t("mode.file.badge")}
             </div>
           </div>
         </button>
@@ -125,7 +130,7 @@ export default function ModeSelection({ onSelect }: ModeSelectionProps) {
 
       {/* Alt bilgi */}
       <p className="mt-8 text-[12px] text-zinc-600">
-        İstediğin zaman mod değiştirebilirsin.
+        {t("mode.note")}
       </p>
     </div>
   );

@@ -1,4 +1,13 @@
-export type ProviderId = "gemini" | "deepseek" | "grok" | "openai" | "claude";
+export type ProviderId =
+  | "gemini"
+  | "deepseek"
+  | "grok"
+  | "openai"
+  | "claude"
+  | "groq"
+  | "cerebras"
+  | "mistral"
+  | "openrouter";
 
 export type ChatRole = "system" | "user" | "assistant";
 
@@ -14,6 +23,10 @@ export interface ApiKeys {
   grok?: string;
   openai?: string;
   claude?: string;
+  groq?: string;
+  cerebras?: string;
+  mistral?: string;
+  openrouter?: string;
 }
 
 export interface ChatRequest {

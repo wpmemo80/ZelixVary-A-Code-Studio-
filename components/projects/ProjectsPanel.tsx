@@ -14,6 +14,7 @@ import {
 import type { ProjectListItem } from "@/lib/projects/store";
 import { deleteProject, subscribeProjects } from "@/lib/projects/store";
 import { useAuth } from "@/lib/auth-context";
+import { useLang } from "@/lib/language-context";
 
 interface ProjectsPanelProps {
   open: boolean;
@@ -33,6 +34,7 @@ export default function ProjectsPanel({
   onExportProject,
 }: ProjectsPanelProps) {
   const { user } = useAuth();
+  const { t } = useLang();
   const [projects, setProjects] = useState<ProjectListItem[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
@@ -77,7 +79,7 @@ export default function ProjectsPanel({
         <div className="flex h-12 shrink-0 items-center justify-between border-b border-zinc-800 px-4">
           <span className="flex items-center gap-2 text-[13.5px] font-bold text-zinc-100">
             <FolderOpen size={16} className="text-violet-400" />
-            Projelerim
+            {t("projects.title")}
           </span>
           <button
             onClick={onClose}
@@ -93,35 +95,35 @@ export default function ProjectsPanel({
             className="flex w-full items-center gap-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 px-4 py-2.5 text-[13px] font-semibold text-white shadow-lg shadow-violet-900/30 transition hover:from-violet-500 hover:to-fuchsia-500 active:scale-[0.98]"
           >
             <FolderInput size={15} />
-            Yeni Proje (Klasör Seç)
+            {t("projects.newProject")}
           </button>
           <button
             onClick={onImportProject}
             className="flex w-full items-center gap-2.5 rounded-xl border border-zinc-700 px-4 py-2.5 text-[13px] font-medium text-zinc-300 transition hover:border-violet-500/60 hover:text-violet-300 active:scale-[0.98]"
           >
             <Download size={15} />
-            Projeyi İçe Aktar
+            {t("projects.import")}
           </button>
           <button
             onClick={onExportProject}
             className="flex w-full items-center gap-2.5 rounded-xl border border-zinc-700 px-4 py-2.5 text-[13px] font-medium text-zinc-300 transition hover:border-emerald-500/60 hover:text-emerald-300 active:scale-[0.98]"
           >
             <FolderInput size={15} className="rotate-180" />
-            Projeyi Çıkar (zelixcode)
+            {t("projects.export")}
           </button>
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto p-3">
           <div className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
             <History size={12} />
-            Geçmiş Projeler
+            {t("projects.history")}
           </div>
 
           {loadError && (
             <div className="mb-3 rounded-xl border border-red-600/40 bg-red-950/40 p-3">
               <p className="flex items-start gap-2 text-[12px] leading-relaxed text-red-300">
                 <AlertTriangle size={14} className="mt-0.5 shrink-0" />
-                <span>Projeler yüklenemedi: {loadError}</span>
+                <span>{t("projects.loadError")} {loadError}</span>
               </p>
             </div>
           )}
@@ -130,7 +132,7 @@ export default function ProjectsPanel({
             <div className="rounded-xl border border-dashed border-zinc-800 p-5 text-center">
               <FolderOpen size={22} className="mx-auto mb-2 text-zinc-700" />
               <p className="text-[12.5px] text-zinc-600">
-                {"Henüz projen yok. \"Yeni Proje\" ile bir klasör seçerek başla."}
+                {t("projects.empty")}
               </p>
             </div>
           ) : (
@@ -146,7 +148,7 @@ export default function ProjectsPanel({
                       <span className="truncate">{p.name}</span>
                     </p>
                     <p className="mt-1 text-[11px] text-zinc-600">
-                      {p.fileCount} dosya ·{" "}
+                      {p.fileCount} {t("projects.files")} ·{" "}
                       {p.updatedAt
                         ? new Date(p.updatedAt).toLocaleDateString("tr-TR", {
                             day: "2-digit",
@@ -170,7 +172,7 @@ export default function ProjectsPanel({
                     ) : (
                       <Trash2 size={11} />
                     )}
-                    {confirmDelete === p.id ? "Emin misin? Tıkla ve sil" : "Sil"}
+                    {confirmDelete === p.id ? t("projects.confirmDelete") : t("projects.delete")}
                   </button>
                 </div>
               ))}

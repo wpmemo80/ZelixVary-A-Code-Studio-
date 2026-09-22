@@ -2,6 +2,7 @@
 
 import { EyeOff, FileCode2 } from "lucide-react";
 import { buildJsConsoleDoc, buildSandboxHtml, inlineProjectAssets } from "@/lib/sandbox";
+import { useLang } from "@/lib/language-context";
 import LivePreview from "./LivePreview";
 import PythonRunner from "./PythonRunner";
 
@@ -20,6 +21,8 @@ export default function PreviewPanel({
   singleCode,
   refreshKey,
 }: PreviewPanelProps) {
+  const { t } = useLang();
+
   if (!projectMode) {
     return <LivePreview srcdoc={buildSandboxHtml(singleCode)} refreshKey={refreshKey} fileName="index.html" />;
   }
@@ -30,9 +33,9 @@ export default function PreviewPanel({
         <div className="max-w-sm rounded-xl border border-dashed border-zinc-800 p-6 text-center">
           <FileCode2 size={24} className="mx-auto mb-2 text-zinc-700" />
           <p className="text-[13px] text-zinc-500">
-            Önizleme için soldan bir dosya seç.
+            {t("preview.selectFile")}
             <br />
-            <span className="text-zinc-600">HTML → canlı web, JS → konsol, PY → Python çalıştırıcı</span>
+            <span className="text-zinc-600">{t("preview.hint")}</span>
           </p>
         </div>
       </div>
@@ -62,11 +65,12 @@ export default function PreviewPanel({
       <div className="max-w-sm rounded-xl border border-dashed border-zinc-800 p-6 text-center">
         <EyeOff size={24} className="mx-auto mb-2 text-zinc-700" />
         <p className="text-[13px] text-zinc-500">
-          {ext ? `.${ext}` : "Bu"} dosyası tek başına önizlenemez.
+          {ext ? `.${ext}` : t("preview.thisFile")} {t("preview.cannotPreview")}
           <br />
           <span className="text-zinc-600">
-            Bir <span className="font-mono">index.html</span> açıp bu dosyayı{" "}
-            <span className="font-mono">{currentFile}</span> olarak bağla.
+            {t("preview.linkHint")}{" "}
+            <span className="font-mono">index.html</span> {t("preview.linkHint2")}{" "}
+            <span className="font-mono">{currentFile}</span> {t("preview.linkHint3")}
           </span>
         </p>
       </div>
