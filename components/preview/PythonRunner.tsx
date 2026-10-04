@@ -170,7 +170,7 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
     worker.onerror = (e) => {
       statusRef.current = "error";
       setStatus("error");
-      setErrorMsg(`Worker hatası: ${e.message}`);
+      setErrorMsg(`${t("py.workerError")}: ${e.message}`);
     };
     workerRef.current = worker;
     statusRef.current = "loading";
@@ -252,7 +252,7 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
             onClick={runCode}
             disabled={!code.trim() || status !== "ready"}
             className="flex h-7 items-center gap-1.5 rounded px-2 text-[11px] font-medium text-emerald-300 transition hover:bg-emerald-500/10 disabled:cursor-not-allowed disabled:opacity-40"
-            title="Çalıştır"
+            title={t("py.run")}
           >
             {running ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} />}
             {t("py.run")}
@@ -298,7 +298,7 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
             <p className="mt-1 text-zinc-700">
               <span className="text-emerald-500/70">$</span> {t("py.autoRun")}
               <br />
-              <span className="text-zinc-700">Note:</span>{" "}
+              <span className="text-zinc-700">{t("py.note")}</span>{" "}
               <span className="font-mono text-[11.5px]">input()</span> {t("py.inputNote")}
               <br />
               {t("py.infiniteLoop")} <span className="text-red-300">{t("py.stop")}</span> {t("py.infiniteLoopEnd")}
@@ -370,7 +370,7 @@ export default function PythonRunner({ code, refreshKey, fileName }: PythonRunne
             <button
               onClick={submitInput}
               className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500 text-black transition hover:bg-amber-400 active:scale-95"
-              title="Gönder"
+              title={t("chat.send")}
             >
               <Send size={13} />
             </button>

@@ -1,4 +1,5 @@
 import type { ProviderId, RouterDecision } from "../types";
+import type { Lang } from "../i18n";
 import { getProvider, PROVIDERS } from "../providers";
 
 interface Rule {
@@ -14,6 +15,8 @@ const DEBUG_RULE: Rule = {
     "analyze", "analiz", "analiz et", "kod analizi", "incele", "yorumla",
     "refactor", "refactoring", "yeniden yaz", "temizle", "temiz kod", "clean code",
     "optimize", "optimizasyon", "performans", "yavaş", "kötü kod", "smell", "geliştir",
+    // İngilizce istemler için de eşleşsin
+    "analyze code", "find bugs", "fix this", "rewrite", "improve performance",
   ],
 };
 
@@ -26,6 +29,8 @@ const UI_RULE: Rule = {
     "navbar", "menü", "menüsü", "form", "login", "giriş sayfası", "register",
     "responsive", "mobil uyumlu", "card", "kart", "hero", "banner", "slider",
     "arayüz tasarla", "ekran tasarla", "maket", "mockup", "dashboard tasarla",
+    // İngilizce istemler için de eşleşsin
+    "dashboard", "color palette", "design a page", "build a page", "landing hero",
   ],
 };
 
@@ -57,21 +62,41 @@ function pick(providerId: ProviderId, reason: string): RouterDecision {
  * - Kod analizi / debug / refactor  -> DeepSeek
  * - Hizli UI / HTML / CSS tasarimi  -> Gemini
  * - Genel sohbet / algoritma        -> Grok -> OpenAI -> DeepSeek -> Gemini
+ * Yönlendirme gerekçesi seçili dile göre üretilir (TR/EN).
  */
-export function smartRoute(prompt: string, available: ProviderId[]): RouterDecision {
+export function smartRoute(
+  prompt: string,
+  available: ProviderId[],
+  lang: Lang = "tr",
+): RouterDecision {
+  /** Gerekçe metnini seçili dile göre üretir. */
+  const R = (tr: string, en: string) => (lang === "en" ? en : tr);
+
   const lower = prompt.toLowerCase();
   const debugScore = countScore(lower, DEBUG_RULE.keywords);
   const uiScore = countScore(lower, UI_RULE.keywords);
 
   if (debugScore > 0 && debugScore >= uiScore) {
     if (available.includes("deepseek")) {
-      return pick("deepseek", `İstem kod analizi/debug ağırlıklı (${debugScore} puan) → DeepSeek seçildi`);
+      return pick(
+        "deepseek",
+        R(
+          `İstem kod analizi/debug ağırlıklı (${debugScore} puan) → DeepSeek seçildi`,
+          `Prompt looks code-analysis/debug-heavy (${debugScore} pts) → DeepSeek selected`,
+        ),
+      );
     }
   }
 
   if (uiScore > 0 && uiScore >= debugScore) {
     if (available.includes("gemini")) {
-      return pick("gemini", `İstem UI/tasarım ağırlıklı (${uiScore} puan) → Gemini seçildi`);
+      return pick(
+        "gemini",
+        R(
+          `İstem UI/tasarım ağırlıklı (${uiScore} puan) → Gemini seçildi`,
+          `Prompt looks UI/design-heavy (${uiScore} pts) → Gemini selected`,
+        ),
+      );
     }
   }
 
@@ -89,14 +114,28 @@ export function smartRoute(prompt: string, available: ProviderId[]): RouterDecis
   for (const id of generalOrder) {
     if (available.includes(id)) {
       const name = getProvider(id).short;
-      return pick(id, `Genel amaçlı istem → ${name} seçildi (Smart Router)`);
+      return pick(
+        id,
+        R(
+          `Genel amaçlı istem → ${name} seçildi (Smart Router)`,
+          `General prompt → ${name} selected (Smart Router)`,
+        ),
+      );
     }
   }
 
   const fallback = PROVIDERS.find((p) => available.includes(p.id));
   if (fallback) {
-    return { provider: fallback.id, model: fallback.defaultModel, reason: "Fallback sağlayıcı kullanıldı" };
+    return {
+      provider: fallback.id,
+      model: fallback.defaultModel,
+      reason: R("Fallback sağlayıcı kullanıldı", "Fallback provider used"),
+    };
   }
 
-  return { provider: "grok", model: "grok-4.6", reason: "Anahtar bulunamadı" };
+  return {
+    provider: "grok",
+    model: "grok-4.6",
+    reason: R("Anahtar bulunamadı", "No API key found"),
+  };
 }

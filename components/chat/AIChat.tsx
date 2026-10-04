@@ -73,10 +73,10 @@ interface UiMessage extends ChatMessage {
   providerLabel?: string;
 }
 
-const QUICK_ACTIONS: { action: ChatAction; label: string; icon: React.ReactNode }[] = [
-  { action: "debug", label: "Kodu Analiz Et & Hata Bul", icon: <Bug size={13} /> },
-  { action: "refactor", label: "Kodu Yeniden Yaz (Refactor)", icon: <Wand2 size={13} /> },
-  { action: "ui", label: "Modern UI Oluştur", icon: <Sparkles size={13} /> },
+const QUICK_ACTIONS: { action: ChatAction; icon: React.ReactNode }[] = [
+  { action: "debug", icon: <Bug size={13} /> },
+  { action: "refactor", icon: <Wand2 size={13} /> },
+  { action: "ui", icon: <Sparkles size={13} /> },
 ];
 
 const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
@@ -84,7 +84,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
   ref,
 ) {
   const { user } = useAuth();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [messages, setMessages] = useState<UiMessage[]>([]);
 
   /** Hızlı aksiyon etiketi (i18n) */
@@ -93,6 +93,13 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
     if (action === "refactor") return t("act.refactor");
     if (action === "ui") return t("act.ui");
     return "";
+  }
+
+  /** Hızlı aksiyon çipinin (kutucuk) görünür etiketi (i18n) */
+  function getChipLabel(action: ChatAction): string {
+    if (action === "debug") return t("action.debug");
+    if (action === "refactor") return t("action.refactor");
+    return t("action.ui");
   }
   const [input, setInput] = useState("");
   const [isBusy, setIsBusy] = useState(false);
@@ -262,7 +269,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
     try {
       loaded = await loadChatById(uid, id, pin ?? undefined);
     } catch {
-      setPinError("Şifre yanlış. Tekrar dene.");
+      setPinError(t("chat.pinWrong"));
       setHistoryLoaded(true);
       return;
     }
@@ -290,11 +297,11 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
     const chatId = activeChatId ?? `${chatDocId(uid, projectId)}_${Date.now()}`;
     if (saveLock === "locked") {
       if (!isValidPin(savePin) || savePin !== savePinConfirm) {
-        showSaveMsg("error", "Şifre 4 haneli rakam olmalı ve iki alan da aynı olmalı.");
+        showSaveMsg("error", t("chat.pinMismatch"));
         return;
       }
     }
-    const name = saveName.trim() || chatNameRef.current || "Genel Sohbet";
+    const name = saveName.trim() || chatNameRef.current || t("chat.generalChat");
     setSavingChat(true);
     try {
       const slim: ChatMessage[] = messages.map((m) => {
@@ -320,8 +327,8 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
       showSaveMsg(
         "ok",
         saveLock === "locked"
-          ? `"${name}" şifreli olarak kaydedildi 🔐`
-          : `"${name}" kaydedildi ✅`,
+          ? `"${name}" ${t("chat.savedLocked")}`
+          : `"${name}" ${t("chat.savedOk")}`,
       );
       listChats(uid)
         .then(setChatList)
@@ -329,7 +336,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
           // yut
         });
     } catch (err) {
-      showSaveMsg("error", `Kayıt başarısız: ${err instanceof Error ? err.message : String(err).slice(0, 200)}`);
+      showSaveMsg("error", `${t("chat.saveError")} ${err instanceof Error ? err.message : String(err).slice(0, 200)}`);
     } finally {
       setSavingChat(false);
     }
@@ -372,10 +379,10 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
         } catch { /* yut */ }
         return { provider: cfg.id, model, reason: "" };
       }
-      const decision = smartRoute(prompt, availableProviders.map((p) => p.id));
+      const decision = smartRoute(prompt, availableProviders.map((p) => p.id), lang);
       return { provider: decision.provider, model: decision.model, reason: decision.reason };
     },
-    [selection, availableProviders],
+    [selection, availableProviders, lang],
   );
 
   const sendToAi = useCallback(
@@ -409,16 +416,16 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
         updateMessage(replyId, { content: full });
       } catch (err) {
         streamBuffer.current.delete(replyId);
-        const msg = err instanceof Error ? err.message : "Bilinmeyen hata";
+        const msg = err instanceof Error ? err.message : t("chat.unknownError");
         updateMessage(replyId, {
-          content: `⚠️ **İstek başarısız oldu**\n\n\`\`\`\n${msg}\n\`\`\`\n\n> Ayarlar'dan API anahtarını kontrol et veya başka bir sağlayıcı seç.`,
+          content: `${t("chat.requestFailed")}\n\n\`\`\`\n${msg}\n\`\`\`\n\n${t("chat.requestFailedHint")}`,
         });
       } finally {
         setIsBusy(false);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [apiKeys, determineProvider, selection],
+    [apiKeys, determineProvider, selection, t],
   );
 
   function handleSend(text?: string) {
@@ -488,7 +495,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
       chat: "",
     };
     const history = messages;
-    const extraLabel = extra ? ` (Ekstra: ${extra.slice(0, 50)}${extra.length > 50 ? "..." : ""})` : "";
+    const extraLabel = extra ? ` (${t("chat.extraShort")}: ${extra.slice(0, 50)}${extra.length > 50 ? "..." : ""})` : "";
     pushMessage({ role: "user", content: getActionLabel(target) + extraLabel });
     sendToAi(prompts[target], history);
   }
@@ -501,7 +508,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
     onApplyCode(block.code);
     pushMessage({
       role: "assistant",
-      content: `✅ Kod editöre uygulandı (${block.language}). Önizleme sekmesi güncelleniyor...`,
+      content: `${t("chat.applied")} (${block.language}). ${t("chat.appliedPreview")}`,
       providerLabel: "ZelixVary",
     });
   }
@@ -510,15 +517,15 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
     <div className="relative flex h-full min-h-0 flex-col bg-[#18181b]">
       <div className="flex shrink-0 items-center gap-2 border-b border-zinc-800 bg-[#232328] px-3 py-2">
         <Bot size={16} className="text-violet-400" />
-        <span className="text-[13px] font-semibold text-zinc-100">ZelixVary AI Asistan</span>
+        <span className="text-[13px] font-semibold text-zinc-100">{t("chat.title")}</span>
         {historyLoaded && chatNameRef.current && messages.length > 0 && (
           <button
             onClick={handleNewChat}
             className="ml-1 flex items-center gap-1 rounded px-1.5 py-0.5 text-[10.5px] text-zinc-500 transition hover:bg-zinc-800 hover:text-violet-300"
-            title="Yeni sohbet başlat (geçerli sohbet Firestore'da saklanır)"
+            title={t("chat.newChatTitle")}
           >
             <Plus size={11} />
-            Yeni Sohbet
+            {t("chat.newChat")}
           </button>
         )}
         <div className="relative ml-auto flex items-center gap-1.5">
@@ -529,20 +536,20 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                 ? "border-violet-500/60 bg-violet-600/15 text-violet-300"
                 : "border-zinc-700 text-zinc-300 hover:border-violet-500/60 hover:text-violet-300"
             }`}
-            title="Hesabındaki kayıtlı sohbetler"
+            title={t("chat.historyTitle")}
           >
             <History size={12} />
-            Geçmiş
+            {t("chat.history")}
           </button>
 
           {historyOpen && (
             <div className="absolute right-0 top-full z-30 mt-1.5 max-h-80 w-72 overflow-y-auto rounded-xl border border-zinc-700 bg-[#1c1c1f] p-1.5 shadow-2xl">
               <div className="px-2 py-1.5 text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500">
-                Kayıtlı Sohbetler
+                {t("chat.savedChats")}
               </div>
               {chatList.length === 0 ? (
                 <div className="px-2 py-4 text-center text-[12px] text-zinc-600">
-                  Henüz kayıtlı sohbet yok. Biraz konuş, otomatik kaydedilsin.
+                  {t("chat.noSavedChats")}
                 </div>
               ) : (
                 chatList.map((c) => (
@@ -555,7 +562,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                     <button
                       onClick={() => selectChat(c)}
                       className="flex min-w-0 flex-1 items-start gap-2 rounded-lg px-2 py-2 text-left"
-                      title={c.encrypted ? "Şifreli sohbet — açmak için kod gerekir" : "Bu sohbeti aç"}
+                      title={c.encrypted ? t("chat.encryptedChat") : t("chat.openChat")}
                     >
                       {c.encrypted ? (
                         <Lock size={12} className="mt-0.5 shrink-0 text-amber-400" />
@@ -568,14 +575,17 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                           {c.encrypted && <span className="ml-1 text-[10px] text-amber-400">🔒</span>}
                         </span>
                         <span className="block text-[10.5px] text-zinc-500">
-                          {c.messageCount} mesaj ·{" "}
+                          {c.messageCount} {t("chat.msgCount")} ·{" "}
                           {c.updatedAt
-                            ? new Date(c.updatedAt).toLocaleDateString("tr-TR", {
-                                day: "2-digit",
-                                month: "short",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })
+                            ? new Date(c.updatedAt).toLocaleDateString(
+                                lang === "tr" ? "tr-TR" : "en-US",
+                                {
+                                  day: "2-digit",
+                                  month: "short",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )
                             : "—"}
                         </span>
                       </span>
@@ -592,8 +602,8 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                       }`}
                       title={
                         confirmDeleteId === c.id
-                          ? "Emin misin? Tekrar tıkla"
-                          : "Bu sohbeti kalıcı olarak sil"
+                          ? t("chat.confirmDelete")
+                          : t("chat.deleteChat")
                       }
                     >
                       <Trash2 size={11} />
@@ -608,10 +618,10 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
             value={selection}
             onChange={(e) => setSelection(e.target.value)}
             className="max-w-[190px] cursor-pointer rounded-md border border-zinc-700 bg-[#18181b] px-2 py-1 text-[12px] text-zinc-200 outline-none transition focus:border-violet-500"
-            title="Model seçimi"
+            title={t("chat.modelSelect")}
           >
-            <option value={AUTO_ROUTER_ID}>🤖 ZelixVary Auto Router</option>
-            <optgroup label="Kullanılabilir modeller">
+            <option value={AUTO_ROUTER_ID}>{t("chat.autoRouter")}</option>
+            <optgroup label={t("chat.availableModels")}>
               {availableProviders.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.icon} {p.name}
@@ -619,10 +629,10 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
               ))}
             </optgroup>
             {availableProviders.length === 0 && (
-              <optgroup label="Anahtar gerekli">
+              <optgroup label={t("chat.keyRequired")}>
                 {PROVIDERS.map((p) => (
                   <option key={p.id} value={p.id} disabled>
-                    {p.icon} {p.name} (anahtar yok)
+                    {p.icon} {p.name} {t("chat.noKeySuffix")}
                   </option>
                 ))}
               </optgroup>
@@ -646,18 +656,17 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                 <Lock size={28} className="text-amber-400" />
               </div>
               <p className="mb-1 text-[14px] font-semibold text-zinc-200">
-                Bu sohbet şifreli 🔒
+                {t("chat.encryptedMsg")}
               </p>
               <p className="mb-4 text-[12.5px] text-zinc-500">
-                Mesajlar yalnızca 4 haneli kodla açılır. Otomatik kayıt, güvenlik için kilitli sohbete
-                yazmaz — kilidi açınca devam edebilirsin.
+                {t("chat.encryptedSub")}
               </p>
               <button
                 onClick={() => {
                   if (activeChatId) {
                     setPinPrompt({
                       id: activeChatId,
-                      name: chatNameRef.current ?? "Genel Sohbet",
+                      name: chatNameRef.current ?? t("chat.generalChat"),
                     });
                     setPinInput("");
                     setPinError(null);
@@ -666,7 +675,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                 className="flex items-center gap-2 rounded-xl bg-amber-500 px-5 py-2.5 text-[13px] font-semibold text-black transition hover:bg-amber-400 active:scale-95"
               >
                 <Lock size={15} />
-                4 Haneli Kodu Gir
+                {t("chat.enterPin")}
               </button>
             </div>
           ) : (
@@ -716,7 +725,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
         {isBusy && (
           <div className="flex items-center gap-2 text-[12px] text-zinc-400">
             <Loader2 size={14} className="animate-spin text-violet-400" />
-            <span>AI yanıt üretiyor...</span>
+            <span>{t("chat.aiTyping")}</span>
           </div>
         )}
         <div ref={scrollRef} />
@@ -732,7 +741,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
               className="flex items-center gap-1.5 rounded-full border border-zinc-700/80 bg-zinc-800/60 px-2.5 py-1 text-[11px] font-medium text-zinc-300 transition hover:border-violet-500/60 hover:text-violet-300 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {a.icon}
-              {a.label}
+              {getChipLabel(a.action)}
             </button>
           ))}
         </div>
@@ -754,7 +763,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
             onClick={() => handleSend()}
             disabled={isBusy || !input.trim()}
             className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-lg bg-violet-600 text-white transition hover:bg-violet-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
-            title="Gönder"
+            title={t("chat.send")}
           >
             <Send size={16} />
           </button>
@@ -768,7 +777,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
             }}
             disabled={isBusy || messages.length === 0}
             className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-lg border border-zinc-700 text-zinc-300 transition hover:border-emerald-500/60 hover:text-emerald-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
-            title="Sohbeti kaydet (ad ve isteğe bağlı şifre)"
+            title={t("chat.saveChat")}
           >
             <Save size={16} />
           </button>
@@ -793,7 +802,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
             <div className="mb-4 flex items-center justify-between">
               <h3 className="flex items-center gap-2 text-[15px] font-bold text-zinc-100">
                 <Save size={15} className="text-emerald-400" />
-                Sohbeti Kaydet
+                {t("chat.saveTitle")}
               </h3>
               <button
                 onClick={() => setSaveOpen(false)}
@@ -803,7 +812,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
               </button>
             </div>
 
-            <label className="mb-1 block text-[11.5px] font-medium text-zinc-400">Sohbet Adı</label>
+            <label className="mb-1 block text-[11.5px] font-medium text-zinc-400">{t("chat.chatName")}</label>
             <input
               autoFocus
               value={saveName}
@@ -824,7 +833,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                 }`}
               >
                 <CircleCheck size={14} className="text-emerald-400" />
-                4 haneli kodla kilitle
+                {t("chat.lockPin")}
               </button>
               <button
                 onClick={() => setSaveLock("none")}
@@ -835,14 +844,14 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                 }`}
               >
                 <CircleX size={14} className="text-red-400" />
-                Şifresiz açık sohbet
+                {t("chat.noLock")}
               </button>
             </div>
 
             {saveLock === "locked" && (
               <div className="mt-4 grid grid-cols-2 gap-2">
                 <div>
-                  <label className="mb-1 block text-[11px] font-medium text-zinc-500">4 Haneli Kod</label>
+                  <label className="mb-1 block text-[11px] font-medium text-zinc-500">{t("chat.pinCode")}</label>
                   <input
                     value={savePin}
                     onChange={(e) => setSavePin(e.target.value.replace(/\D/g, "").slice(0, 4))}
@@ -853,7 +862,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-[11px] font-medium text-zinc-500">Kodu Onayla</label>
+                  <label className="mb-1 block text-[11px] font-medium text-zinc-500">{t("chat.pinConfirm")}</label>
                   <input
                     value={savePinConfirm}
                     onChange={(e) => setSavePinConfirm(e.target.value.replace(/\D/g, "").slice(0, 4))}
@@ -864,7 +873,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                   />
                 </div>
                 <p className="col-span-2 text-[10.5px] leading-relaxed text-zinc-600">
-                  {"🔐 Mesajlar tarayıcında AES-256 ile şifrelenir; Firestore'da yalnızca şifreli metin saklanır. Kodu unutursan sohbete hiçbir şekilde erişemezsin."}
+                  {t("chat.encryptionNote")}
                 </p>
               </div>
             )}
@@ -874,7 +883,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                 onClick={() => setSaveOpen(false)}
                 className="rounded-lg px-4 py-2 text-[13px] text-zinc-300 transition hover:bg-zinc-700/40"
               >
-                Vazgeç
+                {t("chat.cancel")}
               </button>
               <button
                 onClick={handleSaveChat}
@@ -882,7 +891,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                 className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-[13px] font-semibold text-white transition hover:bg-emerald-500 disabled:opacity-50"
               >
                 {savingChat ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
-                Kaydet
+                {t("chat.save")}
               </button>
             </div>
           </div>
@@ -895,11 +904,10 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
           <div className="w-full max-w-xs rounded-2xl border border-zinc-700 bg-[#1c1c1f] p-5 shadow-2xl">
             <h3 className="mb-1 flex items-center gap-2 text-[15px] font-bold text-zinc-100">
               <Lock size={15} className="text-amber-400" />
-              Şifreli Sohbet
+              {t("chat.pinTitle")}
             </h3>
             <p className="mb-3 text-[12px] text-zinc-400">
-              <span className="font-semibold text-zinc-200">{pinPrompt.name}</span> sohbeti 4 haneli kodla
-              korunuyor. Açmak için kodu gir.
+              <span className="font-semibold text-zinc-200">{pinPrompt.name}</span> {t("chat.pinDesc")}
             </p>
             <input
               autoFocus
@@ -927,7 +935,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                 }}
                 className="rounded-lg px-4 py-2 text-[13px] text-zinc-300 transition hover:bg-zinc-700/40"
               >
-                Vazgeç
+                {t("chat.cancel")}
               </button>
               <button
                 onClick={() => {
@@ -939,7 +947,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                 disabled={!isValidPin(pinInput)}
                 className="rounded-lg bg-amber-500 px-4 py-2 text-[13px] font-semibold text-black transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-40"
               >
-                Aç
+                {t("chat.open")}
               </button>
             </div>
           </div>
@@ -954,10 +962,10 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
               <h3 className="flex items-center gap-2 text-[15px] font-bold text-zinc-100">
                 <FileCode2 size={15} className="text-violet-400" />
                 {pickTarget === "ui"
-                  ? "Modern UI Oluştur"
+                  ? t("pick.title.ui")
                   : pickTarget === "refactor"
-                    ? "Kodu Yeniden Yaz"
-                    : "Kod Analizi & Hata Bul"}
+                    ? t("pick.title.refactor")
+                    : t("pick.title.debug")}
               </h3>
               <button
                 onClick={() => setPickTarget(null)}
@@ -967,7 +975,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
               </button>
             </div>
             <p className="mb-3 text-[12px] text-zinc-500">
-              Hangi dosyaları yapay zekaya göndereceğini seç. Seçili dosyalardaki kod analiz edilir.
+              {t("pick.desc")}
             </p>
             <div className="max-h-64 space-y-1 overflow-y-auto rounded-xl border border-zinc-800 bg-[#101013] p-2">
               {Object.keys(files).map((path) => (
@@ -996,7 +1004,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
             {/* Ekstra İstek Alanı */}
             <div className="mt-3">
               <label className="mb-1.5 block text-[11.5px] font-medium text-zinc-400">
-                📝 Ekstra İstek <span className="text-zinc-600">(isteğe bağlı)</span>
+                📝 {t("pick.extraLabel")} <span className="text-zinc-600">{t("pick.optional")}</span>
               </label>
               <textarea
                 value={extraRequest}
@@ -1004,15 +1012,15 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                 rows={2}
                 placeholder={
                   pickTarget === "ui"
-                    ? "Örn: Kubernetes temalı bir dashboard yap, sidebar olsun..."
+                    ? t("pick.extraUiPh")
                     : pickTarget === "refactor"
-                      ? "Örn: Functional component'e çevir, TypeScript ekle..."
-                      : "Örn: Bu hatayı düzelt, performansı artır..."
+                      ? t("pick.extraRefactorPh")
+                      : t("pick.extraDebugPh")
                 }
                 className="w-full resize-none rounded-lg border border-zinc-700 bg-[#101013] px-3 py-2 text-[12px] text-zinc-200 placeholder-zinc-600 outline-none transition focus:border-violet-500"
               />
               <p className="mt-1 text-[10px] text-zinc-600">
-                Yapay zekaya ek bilgi vermek istersen buraya yaz. Seçili dosyalardaki kodla birlikte gönderilir.
+                {t("pick.extraHint")}
               </p>
             </div>
             <div className="mt-4 flex justify-between gap-2">
@@ -1020,14 +1028,14 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                 onClick={() => setPickedPaths(Object.keys(files))}
                 className="rounded-lg px-3 py-2 text-[12px] text-violet-400 transition hover:bg-zinc-800"
               >
-                Tümünü Seç
+                {t("pick.selectAll")}
               </button>
               <div className="flex gap-2">
                 <button
                   onClick={() => setPickTarget(null)}
                   className="rounded-lg px-4 py-2 text-[13px] text-zinc-300 transition hover:bg-zinc-700/40"
                 >
-                  Vazgeç
+                  {t("pick.cancel")}
                 </button>
                 <button
                   onClick={confirmPick}
@@ -1035,7 +1043,7 @@ const AIChat = forwardRef<AIChatHandle, AIChatProps>(function AIChat(
                   className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-4 py-2 text-[13px] font-semibold text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <Sparkles size={13} />
-                  Analiz Et ({pickedPaths.length} dosya)
+                  {t("pick.analyze")} ({pickedPaths.length} {t("pick.files")})
                 </button>
               </div>
             </div>

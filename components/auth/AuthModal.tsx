@@ -75,7 +75,7 @@ export default function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProp
         await setDoc(
           doc(db, "users", cred.user.uid),
           {
-            displayName: displayName.trim() || "ZelixVary Kullanıcısı",
+            displayName: displayName.trim() || t("auth.defaultName"),
             email: email.trim(),
             createdAt: serverTimestamp(),
           },

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ExternalLink, RefreshCw, Terminal } from "lucide-react";
+import { useLang } from "@/lib/language-context";
 
 export interface ConsoleEntry {
   id: number;
@@ -22,6 +23,7 @@ export default function LivePreview({ srcdoc, refreshKey, fileName = "index.html
   const [logsBySource, setLogsBySource] = useState<Record<string, ConsoleEntry[]>>({});
   const [showConsole, setShowConsole] = useState(autoConsole);
   const [loaded, setLoaded] = useState(false);
+  const { t, lang } = useLang();
 
   const sourceKey = `${refreshKey}:${srcdoc.length}:${srcdoc.slice(0, 64)}`;
   const logs = logsBySource[sourceKey] ?? [];
@@ -70,20 +72,20 @@ export default function LivePreview({ srcdoc, refreshKey, fileName = "index.html
     <div className="flex h-full flex-col">
       <div className="flex shrink-0 items-center gap-2 border-b border-zinc-800 bg-[#232328] px-3 py-1.5">
         <span className="text-[11px] font-medium text-zinc-400">
-          {loaded ? "● Canlı" : "○ Yükleniyor..."}
+          {loaded ? t("preview.live") : t("preview.loading")}
         </span>
         <span className="text-[11px] text-zinc-600">{fileName}</span>
         <div className="ml-auto flex items-center gap-1">
           <button
             onClick={openInNewTab}
-            title="Yeni sekmede aç"
+            title={t("preview.openNewTab")}
             className="flex h-7 w-7 items-center justify-center rounded text-zinc-400 transition hover:bg-zinc-700/50 hover:text-zinc-100"
           >
             <ExternalLink size={14} />
           </button>
           <button
             onClick={() => setShowConsole((v) => !v)}
-            title="Konsol"
+            title={t("preview.console")}
             className={`flex h-7 items-center gap-1.5 rounded px-2 text-[11px] font-medium transition ${
               showConsole
                 ? "bg-zinc-700/60 text-zinc-100"
@@ -91,7 +93,7 @@ export default function LivePreview({ srcdoc, refreshKey, fileName = "index.html
             }`}
           >
             <Terminal size={13} />
-            Konsol
+            {t("preview.console")}
             {errorCount > 0 && (
               <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500/90 px-1 text-[10px] font-bold text-white">
                 {errorCount}
@@ -106,7 +108,7 @@ export default function LivePreview({ srcdoc, refreshKey, fileName = "index.html
           <div className="absolute inset-0 flex items-center justify-center bg-[#18181b]">
             <div className="text-center">
               <RefreshCw size={28} className="mx-auto mb-2 text-zinc-600" />
-              <p className="text-sm text-zinc-500">Önizlenecek kod yok</p>
+              <p className="text-sm text-zinc-500">{t("preview.noCode")}</p>
             </div>
           </div>
         )}
@@ -117,7 +119,7 @@ export default function LivePreview({ srcdoc, refreshKey, fileName = "index.html
             sandbox="allow-scripts allow-modals allow-forms allow-popups"
             onLoad={() => setLoaded(true)}
             srcDoc={srcdoc}
-            title="ZelixVary Canlı Önizleme"
+            title={t("preview.iframeTitle")}
             className="absolute inset-0 h-full w-full border-0"
           />
         )}
@@ -127,9 +129,9 @@ export default function LivePreview({ srcdoc, refreshKey, fileName = "index.html
         <div className="flex h-40 shrink-0 flex-col border-t border-zinc-800 bg-[#101013]">
           <div className="flex items-center gap-2 border-b border-zinc-800/80 px-3 py-1 text-[11px] font-medium text-zinc-400">
             <Terminal size={12} />
-            Konsol
+            {t("preview.console")}
             <span className="text-zinc-600">
-              {logs.length === 0 ? "henüz çıktı yok" : `${logs.length} kayıt`}
+              {logs.length === 0 ? t("preview.noLogs") : `${logs.length} ${t("preview.logsCount")}`}
             </span>
             <button
               onClick={() =>
@@ -137,14 +139,13 @@ export default function LivePreview({ srcdoc, refreshKey, fileName = "index.html
               }
               className="ml-auto text-zinc-500 transition hover:text-zinc-200"
             >
-              Temizle
+              {t("py.clear")}
             </button>
           </div>
           <div className="flex-1 overflow-y-auto px-3 py-2 font-mono text-[12px] leading-relaxed">
             {logs.length === 0 ? (
               <p className="text-zinc-600">
-                <span className="text-zinc-500">{"//"}</span> console.log çıktıları
-                burada görünür
+                <span className="text-zinc-500">{"//"}</span> {t("preview.consoleHint")}
               </p>
             ) : (
               logs.map((entry) => (

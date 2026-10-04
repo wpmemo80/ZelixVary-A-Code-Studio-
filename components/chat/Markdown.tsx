@@ -4,6 +4,7 @@ import { useMemo, type ReactNode } from "react";
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import type { ExtractedCode } from "@/lib/ai/extract";
+import { useLang } from "@/lib/language-context";
 
 interface MarkdownProps {
   text: string;
@@ -18,6 +19,7 @@ function CodeBlockView({
   onApply?: (block: ExtractedCode) => void;
 }) {
   const [copied, setCopied] = useState(false);
+  const { t } = useLang();
 
   function copy() {
     navigator.clipboard.writeText(block.code).catch(() => {});
@@ -37,7 +39,7 @@ function CodeBlockView({
               onClick={() => onApply(block)}
               className="flex items-center gap-1 rounded bg-violet-600 px-2 py-1 text-[11px] font-medium text-white transition hover:bg-violet-500 active:scale-95"
             >
-              <span className="text-xs">⇤</span> Uygula
+              <span className="text-xs">⇤</span> {t("md.apply")}
             </button>
           )}
           <button
@@ -45,7 +47,7 @@ function CodeBlockView({
             className="flex items-center gap-1 rounded bg-zinc-800 px-2 py-1 text-[11px] text-zinc-300 transition hover:bg-zinc-700"
           >
             {copied ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
-            {copied ? "Kopyalandı" : "Kopyala"}
+            {copied ? t("md.copied") : t("md.copy")}
           </button>
         </div>
       </div>

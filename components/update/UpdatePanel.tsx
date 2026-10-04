@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CheckCircle2, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useLang } from "@/lib/language-context";
 
 /* ── Eski sürümler ─────────────────────────────────────────── */
 interface UpdateEntry {
@@ -161,20 +162,21 @@ function Side({
 export default function UpdatePanel() {
   const [open, setOpen] = useState(false);
   const [pageIndex, setPageIndex] = useState(0);
+  const { t } = useLang();
 
   // Tüm güncellemeler: en yeniden en eskiye
   const allUpdates = [LATEST, ...UPDATES];
   const currentPage = allUpdates[pageIndex];
 
   useEffect(() => {
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       try {
         if (localStorage.getItem(LATEST.storageKey) !== "1") setOpen(true);
       } catch {
         setOpen(true);
       }
     }, 0);
-    return () => window.clearTimeout(t);
+    return () => window.clearTimeout(timer);
   }, []);
 
   if (!open) return null;
@@ -188,10 +190,10 @@ export default function UpdatePanel() {
             onClick={() => setPageIndex((i) => Math.min(i + 1, allUpdates.length - 1))}
             disabled={pageIndex >= allUpdates.length - 1}
             className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-zinc-400 transition hover:bg-zinc-800 hover:text-zinc-200 disabled:cursor-not-allowed disabled:opacity-30"
-            title="Eski güncelleme"
+            title={t("update.oldTip")}
           >
             <ChevronLeft size={14} />
-            Eski
+            {t("update.old")}
           </button>
 
           <div className="flex items-center gap-2">
@@ -208,9 +210,9 @@ export default function UpdatePanel() {
               onClick={() => setPageIndex((i) => Math.max(i - 1, 0))}
               disabled={pageIndex <= 0}
               className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-zinc-400 transition hover:bg-zinc-800 hover:text-zinc-200 disabled:cursor-not-allowed disabled:opacity-30"
-              title="Yeni güncelleme"
+              title={t("update.newTip")}
             >
-              Yeni
+              {t("update.new")}
               <ChevronRight size={14} />
             </button>
             <button

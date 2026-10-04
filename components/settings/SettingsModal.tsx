@@ -30,6 +30,10 @@ interface SettingsModalProps {
 
 const FAVORITES_KEY = "zelixvary:favorites";
 
+/** Tarayıcının kayıtlı e-postayı otomatik doldurmasını engellemek için
+ *  e-posta görünümlü değerler tanınır ve temizlenir. */
+const EMAIL_LIKE = /[^\s@]+@[^\s@]+\.[^\s@]+/;
+
 /** localStorage'dan kaydedilmiş modeli oku — artık yalnızca sağlayıcının
  *  aktif modelleri arasından kabul eder (kaldırılmış/decommissioned modeller
  *  defaultModel'e düşer). */
@@ -264,11 +268,31 @@ export default function SettingsModal({
             <Search size={14} className="shrink-0 text-zinc-500" />
             <input
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                // Tarayıcı autofill'i kayıtlı e-postayı yazarsa anında temizle
+                const v = e.target.value;
+                if (EMAIL_LIKE.test(v)) {
+                  e.target.value = "";
+                  setQuery("");
+                  return;
+                }
+                setQuery(v);
+              }}
+              onFocus={(e) => {
+                // Odaklanınca dolan e-posta varsa da temizle
+                if (EMAIL_LIKE.test(e.currentTarget.value)) {
+                  e.currentTarget.value = "";
+                  setQuery("");
+                }
+              }}
               placeholder={t("settings.search")}
               className="min-w-0 flex-1 bg-transparent text-[13px] text-zinc-100 placeholder-zinc-600 outline-none"
               spellCheck={false}
               autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              type="search"
+              name="zelixvary-ai-search"
             />
             {query && (
               <button

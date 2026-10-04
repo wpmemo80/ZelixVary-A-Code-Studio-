@@ -331,6 +331,54 @@ You can also choose which model version each provider uses in **Settings**.`,
     en: "💡 Your changes save automatically — return anytime via ⚙️ Settings in the studio.",
   },
   "select.pickModel": { tr: "Kullanacağın modeli seç:", en: "Pick the model you'll use:" },
+
+  // ── Dil paketi tamamlama — arayüzde kalan Türkçe metinler ──
+  // Markdown kod bloğu
+  "md.apply": { tr: "Uygula", en: "Apply" },
+  "md.copy": { tr: "Kopyala", en: "Copy" },
+  "md.copied": { tr: "Kopyalandı", en: "Copied" },
+
+  // AI sohbet — kalan başlık/tooltip/metinler
+  "chat.newChatTitle": { tr: "Yeni sohbet başlat (geçerli sohbet Firestore'da saklanır)", en: "Start a new chat (current chat is saved to Firestore)" },
+  "chat.historyTitle": { tr: "Hesabındaki kayıtlı sohbetler", en: "Saved chats in your account" },
+  "chat.msgCount": { tr: "mesaj", en: "messages" },
+  "chat.generalChat": { tr: "Genel Sohbet", en: "General Chat" },
+  "chat.pinMismatch": { tr: "Şifre 4 haneli rakam olmalı ve iki alan da aynı olmalı.", en: "PIN must be 4 digits and both fields must match." },
+  "chat.unknownError": { tr: "Bilinmeyen hata", en: "Unknown error" },
+  "chat.requestFailed": { tr: "⚠️ **İstek başarısız oldu**", en: "⚠️ **Request failed**" },
+  "chat.requestFailedHint": { tr: "> Ayarlar'dan API anahtarını kontrol et veya başka bir sağlayıcı seç.", en: "> Check your API key in Settings or choose another provider." },
+  "chat.extraShort": { tr: "Ekstra", en: "Extra" },
+
+  // Canlı önizleme
+  "preview.live": { tr: "● Canlı", en: "● Live" },
+  "preview.loading": { tr: "○ Yükleniyor...", en: "○ Loading..." },
+  "preview.openNewTab": { tr: "Yeni sekmede aç", en: "Open in new tab" },
+  "preview.console": { tr: "Konsol", en: "Console" },
+  "preview.noCode": { tr: "Önizlenecek kod yok", en: "No code to preview" },
+  "preview.iframeTitle": { tr: "ZelixVary Canlı Önizleme", en: "ZelixVary Live Preview" },
+  "preview.noLogs": { tr: "henüz çıktı yok", en: "no output yet" },
+  "preview.logsCount": { tr: "kayıt", en: "logs" },
+  "preview.consoleHint": { tr: "console.log çıktıları burada görünür", en: "console.log output appears here" },
+
+  // Python terminali — kalanlar
+  "py.workerError": { tr: "Worker hatası", en: "Worker error" },
+  "py.note": { tr: "Not:", en: "Note:" },
+
+  // Stüdyo — tooltip ve yedek isimler
+  "studio.backToMode": { tr: "Mod seçimine dön", en: "Back to mode selection" },
+  "studio.projectsTip": { tr: "Projelerim: yeni proje, içe aktar, geçmiş", en: "My projects: new project, import, history" },
+  "studio.refreshPreview": { tr: "Önizlemeyi yenile (F5)", en: "Refresh preview (F5)" },
+  "studio.downloadZip": { tr: "Projeyi zip olarak indir (zelixcode)", en: "Download project as zip (zelixcode)" },
+  "studio.manageKeys": { tr: "API anahtarlarını yönet", en: "Manage API keys" },
+  "studio.resizePanel": { tr: "Paneli yeniden boyutlandır", en: "Resize panel" },
+  "studio.user": { tr: "Kullanıcı", en: "User" },
+
+  // Giriş — varsayılan gösterim adı
+  "auth.defaultName": { tr: "ZelixVary Kullanıcısı", en: "ZelixVary User" },
+
+  // Güncelleme paneli gezinme
+  "update.oldTip": { tr: "Eski güncelleme", en: "Older update" },
+  "update.newTip": { tr: "Yeni güncelleme", en: "Latest update" },
 } as const;
 
 export type StringKey = keyof typeof STRINGS;

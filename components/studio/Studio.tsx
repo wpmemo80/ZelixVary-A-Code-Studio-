@@ -316,7 +316,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
   }
 
   const hasAnyKey = Object.values(apiKeys).some((k) => k?.trim());
-  const displayName = user?.displayName || user?.email?.split("@")[0] || "Kullanıcı";
+  const displayName = user?.displayName || user?.email?.split("@")[0] || t("studio.user");
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#101013] text-zinc-200">
@@ -325,7 +325,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
         <button
           onClick={onBackToSelection}
           className="flex items-center gap-1.5 rounded-md border border-zinc-700 px-2 py-1 text-[11.5px] font-medium text-zinc-300 transition hover:border-violet-500/60 hover:text-violet-300"
-          title="Mod seçimine dön"
+          title={t("studio.backToMode")}
         >
           <ArrowLeft size={12} />
           {t("studio.back")}
@@ -356,7 +356,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
             <button
               onClick={() => setProjectsOpen(true)}
               className="flex items-center gap-1.5 rounded-md border border-zinc-700 px-2.5 py-1 text-[11.5px] font-medium text-zinc-300 transition hover:border-violet-500/60 hover:text-violet-300"
-              title="Projelerim: yeni proje, içe aktar, geçmiş"
+              title={t("studio.projectsTip")}
             >
               <FolderOpen size={12} className="text-violet-400" />
               {t("studio.project")}
@@ -367,7 +367,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
                 <FolderOpen size={12} className="text-amber-400" />
                 <span className="truncate">{project.name}</span>
                 {dirty && (
-                  <span className="ml-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" title="Kaydedilmemiş değişiklikler" />
+                  <span className="ml-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" title={t("studio.unsavedChanges")} />
                 )}
               </span>
               {currentFile && (
@@ -406,7 +406,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
           <button
             onClick={() => setRefreshKey((k) => k + 1)}
             className="flex items-center gap-1.5 rounded-md bg-violet-600 px-3 py-1 text-[11.5px] font-medium text-white transition hover:bg-violet-500 active:scale-95"
-            title="Önizlemeyi yenile (F5)"
+            title={t("studio.refreshPreview")}
           >
             <Play size={12} />
             {t("studio.run")}
@@ -418,7 +418,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
             onClick={() => runAction("debug")}
             disabled={!hasAnyKey}
             className="hidden items-center gap-1.5 rounded-md border border-zinc-700 px-2.5 py-1 text-[11.5px] text-zinc-300 transition hover:border-amber-500/60 hover:text-amber-300 disabled:cursor-not-allowed disabled:opacity-40 sm:flex"
-            title="Kodu analiz et & hata bul"
+            title={t("action.debug")}
           >
             <Bug size={12} />
             {t("studio.analyze")}
@@ -427,7 +427,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
             onClick={() => runAction("refactor")}
             disabled={!hasAnyKey}
             className="hidden items-center gap-1.5 rounded-md border border-zinc-700 px-2.5 py-1 text-[11.5px] text-zinc-300 transition hover:border-emerald-500/60 hover:text-emerald-300 disabled:cursor-not-allowed disabled:opacity-40 sm:flex"
-            title="Kodu yeniden yaz (refactor)"
+            title={t("action.refactor")}
           >
             <Wand2 size={12} />
             {t("studio.refactor")}
@@ -436,7 +436,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
             <button
               onClick={handleExportProject}
               className="flex items-center gap-1.5 rounded-md border border-zinc-700 px-2.5 py-1 text-[11.5px] text-zinc-300 transition hover:border-emerald-500/60 hover:text-emerald-300"
-              title="Projeyi zip olarak indir (zelixcode)"
+              title={t("studio.downloadZip")}
             >
               <Download size={12} />
               {t("studio.export")}
@@ -449,7 +449,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
                 ? "border-zinc-700 text-zinc-300 hover:border-violet-500/60 hover:text-violet-300"
                 : "border-violet-500/50 bg-violet-600/15 text-violet-300 hover:bg-violet-600/25"
             }`}
-            title="API anahtarlarını yönet"
+            title={t("studio.manageKeys")}
           >
             <Settings size={12} />
             {hasAnyKey ? t("studio.settings") : t("studio.apiKey")}
@@ -526,9 +526,9 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
           )}
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="flex h-8 items-center gap-2 border-b border-zinc-800 bg-[#232328] px-3">
-              <span className="text-[11px] font-medium text-zinc-400">DÜZENLEYİCİ</span>
+              <span className="text-[11px] font-medium text-zinc-400">{t("studio.editor")}</span>
               <span className="text-[11px] text-zinc-600">
-                {isProjectMode ? (currentFile ?? "dosya seç") : "HTML / CSS / JS — Monaco"}
+                {isProjectMode ? (currentFile ?? t("studio.noFile")) : "HTML / CSS / JS — Monaco"}
               </span>
               <span className="ml-auto flex items-center gap-1 text-[11px] text-zinc-500">
                 <Eye size={11} /> {activeCode.length} {t("studio.chars")}
@@ -569,7 +569,7 @@ export default function Studio({ mode, onBackToSelection }: StudioProps) {
             dragging ? "bg-violet-500" : "bg-zinc-800 hover:bg-violet-500/60"
           }`}
           onMouseDown={() => setDragging(true)}
-          title="Paneli yeniden boyutlandır"
+          title={t("studio.resizePanel")}
         />
 
         {/* Sağ: Sekmeler */}
