@@ -26,7 +26,7 @@ export const STRINGS = {
   "footer.tagline": { tr: "Multi-AI Code Studio", en: "Multi-AI Code Studio" },
   "footer.security": { tr: "API anahtarların yalnızca tarayıcında saklanır 🔒", en: "API keys are stored only in your browser 🔒" },
   "footer.by": { tr: "ZelixYzlm group tarafından", en: "by ZelixYzlm group" },
-  "footer.author": { tr: "👑 Emir Özer (15)", en: "👑 Emir Özer (15)" },
+  "footer.author": { tr: "👑 Emir Özer (15) · Berat Gerek (15)", en: "👑 Emir Özer (15) · Berat Gerek (15)" },
 
   // ── Features ──
   "feat.live.title": { tr: "Canlı Önizleme", en: "Live Preview" },
